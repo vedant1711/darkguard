@@ -7,4 +7,10 @@ testpaths = [
     "text_analyzer/tests",
     "visual_analyzer/tests",
     "review_analyzer/tests",
+    "consent_analyzer/tests",
+    "checkout_flow_analyzer/tests",
+    "subscription_analyzer/tests",
+    "privacy_analyzer/tests",
+    "nagging_analyzer/tests",
+    "pricing_analyzer/tests",
 ]
