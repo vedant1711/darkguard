@@ -1,21 +1,24 @@
 """
 visual_analyzer/service.py — Visual Analyzer Service.
 
-Converts screenshot + DOM metadata into an ElementMap, then sends it
-to an LLM for reasoning about visual dark patterns (layout anomalies,
-visual interference, misdirection through design).
+Converts DOM metadata into an ElementMap, then sends it to an LLM for
+reasoning about visual dark patterns (layout anomalies, visual interference,
+misdirection through design).
+
+Standalone module — imports only from ``core.*`` and own ``interfaces.py``.
+Uses ``core.llm_client`` for model-agnostic LLM calls.
+Uses ``core.sanitizer`` for pre-LLM PII sanitization (Layer 3).
 """
 
 from __future__ import annotations
 
 import json
 import logging
-from dataclasses import asdict
-
-from django.conf import settings
 
 from core.interfaces import BaseAnalyzer
+from core.llm_client import LLMError, get_llm_client
 from core.models import Detection
+from core.sanitizer import sanitize_text
 from visual_analyzer.element_map_builder import build_element_map, element_map_to_prompt
 
 logger = logging.getLogger(__name__)
@@ -47,6 +50,14 @@ Respond ONLY with the JSON array, no other text."""
 class VisualAnalyzerService(BaseAnalyzer):
     """Analyzes page layout via ElementMap → LLM reasoning."""
 
+    @property
+    def name(self) -> str:
+        return "visual"
+
+    @property
+    def required_payload_keys(self) -> list[str]:
+        return ["dom_metadata"]
+
     async def analyze(self, payload: dict[str, object]) -> list[Detection]:
         detections: list[Detection] = []
 
@@ -63,50 +74,62 @@ class VisualAnalyzerService(BaseAnalyzer):
         # Convert to prompt text
         prompt = element_map_to_prompt(element_map)
 
-        # Check if Google API key is configured
-        api_key = getattr(settings, "GOOGLE_API_KEY", "")
-        if not api_key:
-            logger.warning(
-                "GOOGLE_API_KEY not configured — visual analyzer returning "
-                "ElementMap-only heuristic results."
+        # Try LLM analysis via model-agnostic client
+        try:
+            llm = get_llm_client(purpose="visual_analysis")
+
+            # Layer 3: sanitize prompt before sending to LLM
+            sanitized_prompt = sanitize_text(prompt)
+
+            response_text = await llm.generate(
+                prompt=sanitized_prompt,
+                system=SYSTEM_PROMPT,
             )
-            # Fall back to heuristic analysis from ElementMap
+
+            detections = self._parse_llm_response(response_text)
+
+        except LLMError:
+            logger.exception(
+                "Visual analyzer LLM call failed, falling back to heuristics"
+            )
             return self._heuristic_analysis(element_map)
+
+        return detections
+
+    def _parse_llm_response(self, response_text: str) -> list[Detection]:
+        """Parse the LLM JSON response into Detection objects."""
+        detections: list[Detection] = []
+
+        if not response_text:
+            return detections
+
+        # Strip markdown fences if present
+        text = response_text.strip()
+        if text.startswith("```"):
+            lines = text.split("\n")
+            text = "\n".join(lines[1:-1])
 
         try:
-            from google import genai
+            raw_detections = json.loads(text)
+        except json.JSONDecodeError:
+            logger.warning("Visual analyzer: could not parse LLM response as JSON")
+            return detections
 
-            client = genai.Client(api_key=api_key)
-            response = client.models.generate_content(
-                model="gemini-2.5-flash",
-                contents=f"{SYSTEM_PROMPT}\n\n---\n\n{prompt}",
-            )
-
-            response_text = response.text or "[]"
-
-            # Strip markdown fences if present
-            if response_text.startswith("```"):
-                lines = response_text.strip().split("\n")
-                response_text = "\n".join(lines[1:-1])
-
-            raw_detections = json.loads(response_text)
-
-            if isinstance(raw_detections, list):
-                for item in raw_detections:
-                    if isinstance(item, dict):
-                        detections.append(
-                            Detection(
-                                category=str(item.get("category", "visual_interference")),
-                                element_selector=str(item.get("selector", "")),
-                                confidence=float(item.get("confidence", 0.5)),
-                                explanation=str(item.get("explanation", "")),
-                                severity=str(item.get("severity", "medium")),  # type: ignore[arg-type]
-                            )
+        if isinstance(raw_detections, list):
+            for item in raw_detections:
+                if isinstance(item, dict):
+                    detections.append(
+                        Detection(
+                            category=str(item.get("category", "visual_interference")),
+                            element_selector=str(item.get("selector", "")),
+                            confidence=float(item.get("confidence", 0.5)),
+                            explanation=str(item.get("explanation", "")),
+                            severity=str(item.get("severity", "medium")),  # type: ignore[arg-type]
+                            analyzer_name=self.name,
+                            platform_context="general",
+                            regulation_refs=["DSA-Art25"],
                         )
-
-        except Exception:
-            logger.exception("Visual analyzer LLM call failed, falling back to heuristics")
-            return self._heuristic_analysis(element_map)
+                    )
 
         return detections
 

@@ -1,8 +1,8 @@
 """
 core/views.py — POST /api/analyze endpoint.
 
-Accepts the full analysis payload, dispatches to all analyzers,
-and returns merged detections.
+Accepts the full analysis payload, sanitizes it server-side,
+dispatches to all registered analyzers, and returns merged detections.
 """
 
 from __future__ import annotations
@@ -16,27 +16,12 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from core.dispatcher import dispatch
+from core.registry import AnalyzerRegistry
+from core.sanitizer import sanitize_payload
 from core.serializers import AnalyzeRequestSerializer, AnalyzeResponseSerializer
 
-# Lazy-import analyzer services to avoid circular imports
-_analyzers: dict[str, object] | None = None
-
-
-def _get_analyzers() -> dict[str, object]:
-    global _analyzers  # noqa: PLW0603
-    if _analyzers is None:
-        from dom_analyzer.service import DomAnalyzerService
-        from text_analyzer.service import TextAnalyzerService
-        from visual_analyzer.service import VisualAnalyzerService
-        from review_analyzer.service import ReviewAnalyzerService
-
-        _analyzers = {
-            "dom": DomAnalyzerService(),
-            "text": TextAnalyzerService(),
-            "visual": VisualAnalyzerService(),
-            "review": ReviewAnalyzerService(),
-        }
-    return _analyzers  # type: ignore[return-value]
+# Ensure all analyzer packages are discovered on first import
+AnalyzerRegistry.discover()
 
 
 @api_view(["POST"])
@@ -46,10 +31,12 @@ def analyze(request: Request) -> Response:
     serializer.is_valid(raise_exception=True)
 
     payload: dict[str, object] = serializer.validated_data  # type: ignore[assignment]
-    analyzers = _get_analyzers()
 
-    # Run async dispatcher from sync Django view
-    detections = asyncio.run(dispatch(analyzers, payload))  # type: ignore[arg-type]
+    # Layer 2: server-side PII re-sanitization (defense-in-depth)
+    payload = sanitize_payload(payload)
+
+    # Dispatch to all registered analyzers
+    detections = asyncio.run(dispatch(payload))
 
     response_data = {
         "detections": [asdict(d) for d in detections],

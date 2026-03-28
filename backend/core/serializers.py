@@ -75,6 +75,11 @@ class DetectionSerializer(serializers.Serializer[dict[str, object]]):
         choices=["false_positive", "confirmed"],
         allow_null=True,
     )
+    analyzer_name = serializers.CharField(allow_blank=True, default="")
+    platform_context = serializers.CharField(default="general")
+    regulation_refs = serializers.ListField(
+        child=serializers.CharField(), default=list
+    )
 
 
 class AnalyzeResponseSerializer(serializers.Serializer[dict[str, object]]):

@@ -5,6 +5,8 @@ Pattern-matching / NLP rules for detecting dark patterns in text:
 - Confirmshaming (guilt-tripping decline copy)
 - Urgency / scarcity language
 - Misdirection (misleading button labels)
+
+Standalone module — imports only from ``core.*``.
 """
 
 from __future__ import annotations
@@ -13,6 +15,7 @@ import re
 
 from core.interfaces import BaseAnalyzer
 from core.models import Detection
+from text_analyzer.interfaces import LabeledElement, TextPayload
 
 
 # ── Pattern libraries ─────────────────────────────────────
@@ -62,44 +65,82 @@ MISDIRECTION_PATTERNS: list[tuple[re.Pattern[str], str]] = [
 class TextAnalyzerService(BaseAnalyzer):
     """Analyzes visible text for dark-pattern signals."""
 
+    @property
+    def name(self) -> str:
+        return "text"
+
+    @property
+    def required_payload_keys(self) -> list[str]:
+        return ["text_content"]
+
     async def analyze(self, payload: dict[str, object]) -> list[Detection]:
         detections: list[Detection] = []
 
-        text_content = payload.get("text_content", {})
-        if not isinstance(text_content, dict):
+        # Convert raw dict → typed TextPayload
+        text_payload = self._parse_payload(payload)
+        if text_payload is None:
             return detections
 
-        button_labels = text_content.get("button_labels", [])
-        body_text = str(text_content.get("body_text", ""))
-
-        if isinstance(button_labels, list):
-            detections.extend(self._check_confirmshaming(button_labels))
-            detections.extend(self._check_misdirection(button_labels))
-
-        detections.extend(self._check_urgency(body_text))
+        detections.extend(self._check_confirmshaming(text_payload.button_labels))
+        detections.extend(self._check_misdirection(text_payload.button_labels))
+        detections.extend(self._check_urgency(text_payload.body_text))
 
         return detections
 
+    def _parse_payload(self, payload: dict[str, object]) -> TextPayload | None:
+        """Convert raw payload dict → typed TextPayload."""
+        text_content = payload.get("text_content", {})
+        if not isinstance(text_content, dict):
+            return None
+
+        raw_labels = text_content.get("button_labels", [])
+        raw_headings = text_content.get("headings", [])
+        body_text = str(text_content.get("body_text", ""))
+
+        labels = [
+            LabeledElement(
+                selector=str(lbl.get("selector", "")),
+                text=str(lbl.get("text", "")),
+            )
+            for lbl in (raw_labels if isinstance(raw_labels, list) else [])
+            if isinstance(lbl, dict)
+        ]
+
+        headings = [
+            LabeledElement(
+                selector=str(h.get("selector", "")),
+                text=str(h.get("text", "")),
+            )
+            for h in (raw_headings if isinstance(raw_headings, list) else [])
+            if isinstance(h, dict)
+        ]
+
+        return TextPayload(
+            button_labels=labels,
+            headings=headings,
+            body_text=body_text,
+        )
+
     def _check_confirmshaming(
-        self, labels: list[object]
+        self, labels: list[LabeledElement]
     ) -> list[Detection]:
         """Detect guilt-tripping decline copy on buttons/links."""
         detections: list[Detection] = []
         for lbl in labels:
-            if not isinstance(lbl, dict):
-                continue
-            text = str(lbl.get("text", ""))
             for pattern in CONFIRMSHAMING_PATTERNS:
-                if pattern.search(text):
+                if pattern.search(lbl.text):
                     detections.append(
                         Detection(
                             category="confirmshaming",
-                            element_selector=str(lbl.get("selector", "")),
+                            element_selector=lbl.selector,
                             confidence=0.85,
                             explanation=(
-                                f'The decline option uses guilt-tripping language: "{text}"'
+                                f'The decline option uses guilt-tripping language: "{lbl.text}"'
                             ),
                             severity="medium",
+                            analyzer_name=self.name,
+                            platform_context="ecommerce",
+                            regulation_refs=["FTC-S5", "DSA-Art25"],
                         )
                     )
                     break  # one match per label
@@ -121,28 +162,32 @@ class TextAnalyzerService(BaseAnalyzer):
                             f'Urgency/scarcity language detected: "…{snippet.strip()}…"'
                         ),
                         severity="low",
+                        analyzer_name=self.name,
+                        platform_context="ecommerce",
+                        regulation_refs=["FTC-S5"],
                     )
                 )
         return detections
 
     def _check_misdirection(
-        self, labels: list[object]
+        self, labels: list[LabeledElement]
     ) -> list[Detection]:
         """Detect misleading button labels."""
         detections: list[Detection] = []
         for lbl in labels:
-            if not isinstance(lbl, dict):
-                continue
-            text = str(lbl.get("text", "")).strip()
+            text = lbl.text.strip()
             for pattern, explanation in MISDIRECTION_PATTERNS:
                 if pattern.match(text):
                     detections.append(
                         Detection(
                             category="misdirection",
-                            element_selector=str(lbl.get("selector", "")),
+                            element_selector=lbl.selector,
                             confidence=0.6,
                             explanation=explanation,
                             severity="low",
+                            analyzer_name=self.name,
+                            platform_context="general",
+                            regulation_refs=["DSA-Art25"],
                         )
                     )
                     break

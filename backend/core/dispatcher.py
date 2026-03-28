@@ -1,9 +1,11 @@
 """
 core/dispatcher.py — Async fan-out dispatcher.
 
-Runs all 4 analyzers concurrently via asyncio.gather() with per-analyzer
-timeouts. Merges results and sets the `corroborated` flag on detections
-where 2+ analyzers agree on the same element + category.
+Runs all registered analyzers concurrently via asyncio.gather() with
+per-analyzer timeouts.  Validates ``required_payload_keys`` before
+dispatching.  Merges results, stamps ``analyzer_name``, and sets the
+``corroborated`` flag on detections where 2+ analyzers agree on the
+same element + category.
 """
 
 from __future__ import annotations
@@ -16,6 +18,7 @@ from django.conf import settings
 
 from core.interfaces import BaseAnalyzer
 from core.models import Detection
+from core.registry import AnalyzerRegistry
 
 logger = logging.getLogger(__name__)
 
@@ -26,23 +29,46 @@ def _get_analyzer_timeout() -> float:
 
 
 async def _run_analyzer(
-    name: str,
     analyzer: BaseAnalyzer,
     payload: dict[str, object],
     timeout: float,
 ) -> list[Detection]:
     """Run a single analyzer with a timeout, returning [] on failure."""
+    name = analyzer.name
     try:
-        return await asyncio.wait_for(
+        detections = await asyncio.wait_for(
             analyzer.analyze(payload),
             timeout=timeout,
         )
+        # Stamp analyzer_name on every detection
+        for det in detections:
+            if not det.analyzer_name:
+                det.analyzer_name = name
+        return detections
     except asyncio.TimeoutError:
         logger.warning("Analyzer %s timed out after %.1fs", name, timeout)
         return []
     except Exception:
         logger.exception("Analyzer %s raised an unexpected error", name)
         return []
+
+
+def _check_payload_keys(
+    analyzer: BaseAnalyzer, payload: dict[str, object]
+) -> bool:
+    """Check that the payload contains all keys required by the analyzer."""
+    missing = [
+        key for key in analyzer.required_payload_keys
+        if key not in payload
+    ]
+    if missing:
+        logger.warning(
+            "Skipping analyzer %s: missing required payload keys %s",
+            analyzer.name,
+            missing,
+        )
+        return False
+    return True
 
 
 def _set_corroborated(detections: list[Detection]) -> list[Detection]:
@@ -57,7 +83,9 @@ def _set_corroborated(detections: list[Detection]) -> list[Detection]:
         counts[key].append(det)
 
     for group in counts.values():
-        if len(group) >= 2:
+        # Check that at least 2 different analyzers flagged this
+        unique_analyzers = {det.analyzer_name for det in group}
+        if len(unique_analyzers) >= 2:
             for det in group:
                 det.corroborated = True
 
@@ -65,24 +93,34 @@ def _set_corroborated(detections: list[Detection]) -> list[Detection]:
 
 
 async def dispatch(
-    analyzers: dict[str, BaseAnalyzer],
     payload: dict[str, object],
+    analyzers: dict[str, BaseAnalyzer] | None = None,
 ) -> list[Detection]:
-    """
-    Fan out to all analyzers concurrently, merge & deduplicate results.
+    """Fan out to all analyzers concurrently, merge & deduplicate results.
 
     Args:
-        analyzers: Mapping of analyzer name → instance.
         payload: The full request payload.
+        analyzers: Optional explicit analyzer dict (for testing).
+                   Defaults to ``AnalyzerRegistry.get_all()``.
 
     Returns:
         Merged, deduplicated list of Detections sorted by confidence desc.
     """
+    if analyzers is None:
+        analyzers = AnalyzerRegistry.get_all()
+
     timeout = _get_analyzer_timeout()
 
-    tasks = [
-        _run_analyzer(name, analyzer, payload, timeout)
+    # Filter to analyzers whose required keys are present
+    eligible = {
+        name: analyzer
         for name, analyzer in analyzers.items()
+        if _check_payload_keys(analyzer, payload)
+    }
+
+    tasks = [
+        _run_analyzer(analyzer, payload, timeout)
+        for analyzer in eligible.values()
     ]
 
     results = await asyncio.gather(*tasks)

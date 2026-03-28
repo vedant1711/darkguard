@@ -76,3 +76,9 @@ ANALYZER_TIMEOUT: int = int(os.getenv("ANALYZER_TIMEOUT", "10"))
 
 # Google GenAI
 GOOGLE_API_KEY: str = os.getenv("GOOGLE_API_KEY", "")
+
+# NVIDIA NIM (optional)
+NVIDIA_API_KEY: str = os.getenv("NVIDIA_API_KEY", "")
+
+# LLM Provider: "auto" (default), "gemini", "nvidia"
+LLM_PROVIDER: str = os.getenv("LLM_PROVIDER", "auto")

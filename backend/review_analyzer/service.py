@@ -5,6 +5,10 @@ Detects fake social proof by analyzing review text:
 - Burst patterns (many similar reviews in a short span)
 - Templated/repetitive praise
 - Suspiciously generic language via LLM
+
+Standalone module — imports only from ``core.*`` and own ``interfaces.py``.
+Uses ``core.llm_client`` for model-agnostic LLM calls.
+Uses ``core.sanitizer`` for pre-LLM PII sanitization (Layer 3).
 """
 
 from __future__ import annotations
@@ -12,12 +16,12 @@ from __future__ import annotations
 import json
 import logging
 import re
-from collections import Counter
-
-from django.conf import settings
 
 from core.interfaces import BaseAnalyzer
+from core.llm_client import LLMError, get_llm_client
 from core.models import Detection
+from core.sanitizer import sanitize_text
+from review_analyzer.interfaces import ReviewPayload
 
 logger = logging.getLogger(__name__)
 
@@ -55,12 +59,21 @@ Respond ONLY with the JSON array, no other text."""
 class ReviewAnalyzerService(BaseAnalyzer):
     """Analyzes review text for fake social-proof patterns."""
 
+    @property
+    def name(self) -> str:
+        return "review"
+
+    @property
+    def required_payload_keys(self) -> list[str]:
+        return ["review_text"]
+
     async def analyze(self, payload: dict[str, object]) -> list[Detection]:
-        review_text = payload.get("review_text")
-        if not review_text or not isinstance(review_text, str):
+        # Convert raw dict → typed ReviewPayload
+        review_payload = self._parse_payload(payload)
+        if review_payload is None:
             return []
 
-        review_text = review_text.strip()
+        review_text = review_payload.review_text.strip()
         if len(review_text) < 20:
             return []
 
@@ -70,13 +83,20 @@ class ReviewAnalyzerService(BaseAnalyzer):
         # Heuristic analysis first
         detections = self._heuristic_analysis(reviews)
 
-        # LLM analysis if API key is available
-        api_key = getattr(settings, "GOOGLE_API_KEY", "")
-        if api_key and len(reviews) >= 3:
-            llm_detections = await self._llm_analysis(review_text, api_key)
+        # LLM analysis if available and enough reviews
+        if len(reviews) >= 3:
+            llm_detections = await self._llm_analysis(review_text)
             detections.extend(llm_detections)
 
         return detections
+
+    def _parse_payload(self, payload: dict[str, object]) -> ReviewPayload | None:
+        """Convert raw payload dict → typed ReviewPayload."""
+        review_text = payload.get("review_text")
+        if not review_text or not isinstance(review_text, str):
+            return None
+        url = str(payload.get("url", ""))
+        return ReviewPayload(review_text=review_text, url=url)
 
     def _heuristic_analysis(self, reviews: list[str]) -> list[Detection]:
         """Rule-based fake review detection."""
@@ -104,12 +124,14 @@ class ReviewAnalyzerService(BaseAnalyzer):
                         f"praise patterns, suggesting templated or fake reviews."
                     ),
                     severity="medium",
+                    analyzer_name=self.name,
+                    platform_context="ecommerce",
+                    regulation_refs=["FTC-S5"],
                 )
             )
 
         # Check for suspiciously similar reviews (burst pattern)
         if len(reviews) >= 5:
-            # Simple similarity: count reviews that share 3+ consecutive words
             similar_pairs = 0
             total_pairs = 0
             words_per_review = [set(r.lower().split()) for r in reviews]
@@ -132,33 +154,39 @@ class ReviewAnalyzerService(BaseAnalyzer):
                             f"word overlap, suggesting burst-generated reviews."
                         ),
                         severity="high",
+                        analyzer_name=self.name,
+                        platform_context="ecommerce",
+                        regulation_refs=["FTC-S5"],
                     )
                 )
 
         return detections
 
-    async def _llm_analysis(
-        self, review_text: str, api_key: str
-    ) -> list[Detection]:
-        """LLM-based fake review detection."""
+    async def _llm_analysis(self, review_text: str) -> list[Detection]:
+        """LLM-based fake review detection via model-agnostic client."""
         detections: list[Detection] = []
 
         try:
-            from google import genai
+            llm = get_llm_client(purpose="review_analysis")
 
-            client = genai.Client(api_key=api_key)
-            response = client.models.generate_content(
-                model="gemini-2.5-flash",
-                contents=f"{SYSTEM_PROMPT}\n\n---\n\n{review_text[:3000]}",
+            # Layer 3: sanitize review text before sending to LLM
+            sanitized_text = sanitize_text(review_text[:3000])
+
+            response_text = await llm.generate(
+                prompt=sanitized_text,
+                system=SYSTEM_PROMPT,
             )
 
-            response_text = response.text or "[]"
+            if not response_text:
+                return detections
 
-            if response_text.startswith("```"):
-                lines = response_text.strip().split("\n")
-                response_text = "\n".join(lines[1:-1])
+            # Strip markdown fences if present
+            text = response_text.strip()
+            if text.startswith("```"):
+                lines = text.split("\n")
+                text = "\n".join(lines[1:-1])
 
-            raw_detections = json.loads(response_text)
+            raw_detections = json.loads(text)
 
             if isinstance(raw_detections, list):
                 for item in raw_detections:
@@ -170,10 +198,17 @@ class ReviewAnalyzerService(BaseAnalyzer):
                                 confidence=float(item.get("confidence", 0.5)),
                                 explanation=str(item.get("explanation", "")),
                                 severity=str(item.get("severity", "medium")),  # type: ignore[arg-type]
+                                analyzer_name=self.name,
+                                platform_context="ecommerce",
+                                regulation_refs=["FTC-S5"],
                             )
                         )
 
-        except Exception:
+        except LLMError:
             logger.exception("Review analyzer LLM call failed")
+        except json.JSONDecodeError:
+            logger.warning("Review analyzer: could not parse LLM response as JSON")
+        except Exception:
+            logger.exception("Review analyzer unexpected error")
 
         return detections

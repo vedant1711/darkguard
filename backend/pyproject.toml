@@ -1,6 +1,8 @@
 [tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "darkguard.settings"
 pythonpath = ["."]
 testpaths = [
+    "core/tests",
     "dom_analyzer/tests",
     "text_analyzer/tests",
     "visual_analyzer/tests",

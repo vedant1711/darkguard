@@ -39,6 +39,16 @@ class Detection:
     user_feedback: UserFeedback = field(default=None)
     """User feedback for model fine-tuning: null, 'false_positive', or 'confirmed'."""
 
+    analyzer_name: str = field(default="")
+    """Name of the analyzer that produced this detection (e.g. 'dom', 'text')."""
+
+    platform_context: str = field(default="general")
+    """Platform context: 'ecommerce', 'saas', 'social_media', 'gaming',
+    'food_travel', 'fintech', 'consent', or 'general'."""
+
+    regulation_refs: list[str] = field(default_factory=list)
+    """Regulation references this detection maps to (e.g. ['FTC-S5', 'DSA-Art25'])."""
+
     def __post_init__(self) -> None:
         if not 0.0 <= self.confidence <= 1.0:
             raise ValueError(
