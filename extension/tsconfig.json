@@ -1,5 +1,4 @@
 {
-    "extends": "@tsconfig/svelte/tsconfig.json",
     "compilerOptions": {
         "target": "ES2022",
         "module": "ES2022",
@@ -13,6 +12,8 @@
         "rootDir": "./src",
         "sourceMap": true,
         "declaration": true,
+        "verbatimModuleSyntax": true,
+        "skipLibCheck": true,
         "types": [
             "chrome"
         ]

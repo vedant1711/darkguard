@@ -1,0 +1,170 @@
+.scanForm {
+  max-width: 600px;
+}
+
+.inputGroup {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.inputGroup .input {
+  flex: 1;
+}
+
+.resultWrap {
+  margin-top: 32px;
+}
+
+.scoreCard {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 24px;
+  padding: 28px;
+}
+
+.scoreCircle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.8rem;
+  letter-spacing: -0.03em;
+  flex-shrink: 0;
+}
+
+.scoreCircle.gradeA { background: rgba(46, 213, 115, 0.12); color: var(--grade-a); border: 2px solid var(--grade-a); }
+.scoreCircle.gradeB { background: rgba(123, 237, 159, 0.12); color: var(--grade-b); border: 2px solid var(--grade-b); }
+.scoreCircle.gradeC { background: rgba(255, 165, 2, 0.12); color: var(--grade-c); border: 2px solid var(--grade-c); }
+.scoreCircle.gradeD { background: rgba(255, 99, 72, 0.12); color: var(--grade-d); border: 2px solid var(--grade-d); }
+.scoreCircle.gradeF { background: rgba(255, 71, 87, 0.12); color: var(--grade-f); border: 2px solid var(--grade-f); }
+
+.scoreLabel {
+  font-size: 0.55rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.8;
+}
+
+.scoreMeta {
+  flex: 1;
+}
+
+.scoreMeta h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.scoreStats {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.scoreStatItem {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.scoreStatItem strong {
+  color: var(--text-primary);
+  margin-right: 4px;
+}
+
+.detectionsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.detectionCard {
+  padding: 20px;
+}
+
+.detectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.detectionCategory {
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.detectionExplanation {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+
+.detectionMeta {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.confidence {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.analyzerBadge {
+  font-size: 0.65rem;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.corrobBadge {
+  font-size: 0.65rem;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: rgba(46, 213, 115, 0.12);
+  color: var(--grade-a);
+  font-weight: 600;
+}
+
+.loadingState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 48px;
+  color: var(--text-muted);
+}
+
+.bigSpinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.errorMsg {
+  padding: 16px;
+  border-radius: var(--radius-md);
+  background: rgba(255, 71, 87, 0.08);
+  border: 1px solid rgba(255, 71, 87, 0.2);
+  color: var(--severity-high);
+  font-size: 0.85rem;
+}
+
+.viewReportBtn {
+  margin-top: 16px;
+}

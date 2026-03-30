@@ -5,8 +5,8 @@ description: Complete project handover — architecture, file inventory, constra
 # DarkGuard — Complete Agent Handover
 
 > **Last updated**: 2026-03-29  
-> **Test suite**: 111 tests passing  
-> **Status**: Phases 1–4 COMPLETE. Web Dashboard is next.
+> **Test suite**: 118 backend tests passing, Next.js build succeeds  
+> **Status**: Phases 1–5 COMPLETE
 
 ---
 
@@ -16,6 +16,15 @@ DarkGuard is an enterprise-grade dark pattern auditing platform. It consists of:
 
 1. **Chrome Extension** (Svelte + TypeScript + Vite) — collects DOM metadata, text, reviews, checkout flow data, and nagging events from web pages, strips PII before sending to the backend.
 2. **Django REST Backend** (Python 3.13) — analyzes payloads via 10 modular analyzers, enriches with regulatory mapping, scores/grades websites, persists results, and serves scan history via REST API.
+
+| Phase | Description | Tests |
+|---|---|---|
+| **1** | Core hardening: registry, sanitizer, LLM client, dispatcher, 4 analyzer upgrades | 51 |
+| **2** | 6 new analyzers (consent, checkout, subscription, privacy, nagging, pricing) | 84 |
+| **3** | Extension: new payload types, collectors, overlay UI; backend serializer fixes | — |
+| **3.5** | Intelligence Layer: scoring engine, regulatory mapper, report generator | 102 |
+| **4** | Persistence, scan history API, compliance report endpoint, Next.js dashboard | 111 |
+| **5** | Playwright crawler, benchmarking, HTML/PDF export, crawl+analyze endpoint | **118** |
 
 **Root directory**: `/Users/vedantsomani/STLP Mac Projects/Hackathons/DarkGuard/darkguard/`
 
@@ -162,9 +171,11 @@ extension/
 | Method | Path | Description |
 |---|---|---|
 | `POST` | `/api/analyze` | Run all analyzers. Returns `detections[]`, `audit_report`, `scan_id` |
+| `POST` | `/api/scans/crawl` | Server-side Playwright crawl + full analysis pipeline |
 | `GET` | `/api/scans/` | Paginated scan history. Query: `?url=`, `?limit=`, `?offset=` |
 | `GET` | `/api/scans/<id>/` | Single scan with all detection records |
 | `GET` | `/api/scans/<id>/report/` | Full compliance audit report (JSON) |
+| `GET` | `/api/scans/<id>/report/pdf` | Styled HTML compliance report (print-to-PDF) |
 
 ### POST /api/analyze — Request payload
 
@@ -244,7 +255,25 @@ All 19 categories are mapped to their applicable regulations in `core/regulatory
 
 ---
 
-## 8. How to Run
+## 8. Dashboard (`dashboard/`)
+
+Next.js 16 + TypeScript App Router with premium dark theme.
+
+| Route | Page | Description |
+|---|---|---|
+| `/` | Dashboard | Stats grid (total scans, avg score, worst grade) + recent scans table |
+| `/scan` | New Scan | URL submission form → live analysis with score circle + detection cards |
+| `/scan/[id]` | Scan Detail | Score card, regulation violations, category summary table, detection list |
+| `/history` | History | Filterable + paginated scan table with grade badges |
+
+**Key files**:
+- `src/lib/api.ts` — typed API client for all backend endpoints
+- `src/components/Sidebar.tsx` — sidebar nav with active-route highlighting
+- `src/app/globals.css` — design system (Inter font, CSS vars, badges, animations)
+
+---
+
+## 9. How to Run
 
 ```bash
 # Backend
@@ -253,8 +282,13 @@ pip install -r requirements.txt
 python3 manage.py migrate
 python3 manage.py runserver           # http://localhost:8000
 
-# Tests (111 tests)
-python3 -m pytest -v
+# Dashboard
+cd darkguard/dashboard
+npm install
+npm run dev                           # http://localhost:3000
+
+# Tests (111 backend tests)
+cd backend && python3 -m pytest -v
 
 # Extension
 cd darkguard/extension
@@ -262,13 +296,16 @@ npm install
 npx tsc --noEmit                      # type-check
 npx vite build                        # build to dist/
 
+# Dashboard build verification
+cd darkguard/dashboard && npx next build
+
 # Load Extension
 # Chrome → Extensions → Load Unpacked → select extension/dist/
 ```
 
 ---
 
-## 9. How to Add a New Analyzer
+## 10. How to Add a New Analyzer
 
 Follow this exact pattern:
 
@@ -305,7 +342,7 @@ Then add `"new_analyzer"` to `INSTALLED_APPS` in `settings.py` and add `"new_ana
 
 ---
 
-## 10. Isolation Verification
+## 11. Isolation Verification
 
 Run this grep — it MUST return NO results:
 
@@ -315,22 +352,18 @@ grep -r "from.*_analyzer" backend/ --include="*.py" | grep -v __pycache__ | grep
 
 ---
 
-## 11. Remaining Roadmap (from Catalog)
+## 12. Remaining Roadmap (from Catalog)
 
-### Phase 5: Web Dashboard (NEXT)
-- Vite + React frontend dashboard
-- Submit URLs for auditing
-- View scan history with filtering by grade/URL/date
-- Per-scan detail view with detection cards
-- Side-by-side site comparison
-- Export compliance reports (PDF/HTML)
+### Phase 5: Advanced Capabilities — Completed ✅
+- ~~Browser Automation (Playwright) for headless crawling~~ → `crawler/service.py`
+- ~~Comparative Benchmarking against industry averages~~ → `core/benchmarking.py`
+- ~~PDF/HTML compliance report export~~ → `GET /api/scans/<id>/report/pdf`
 
-### Phase 6: Advanced Capabilities
+### Phase 5: Advanced Capabilities — Remaining
 - ML Classifier (RoBERTa fine-tuned on dark pattern corpus)
-- Browser Automation (Playwright) for multi-page flow crawling
-- Scheduled Auditing (Celery) for regression tracking
-- Comparative Benchmarking against industry averages
-- A/B Test Detection
+- Scheduled Auditing (Celery) for periodic regression tracking
+- A/B Test Detection analyzer
+- Side-by-side site comparison view in dashboard
 - Mobile App Auditing (Appium)
 
 ### Catalog Reference
@@ -339,9 +372,9 @@ The full 42-pattern taxonomy is documented in:
 
 ---
 
-## 12. Known Notes
+## 13. Known Notes
 
 - `core/models.py` contains a **dataclass** (`Detection`), NOT a Django ORM model. ORM persistence lives in `scans/models.py` to avoid a circular import with analyzer `__init__.py` chains.
-- The extension's `tsconfig.json` references `@tsconfig/svelte` which may need `npm install` to resolve.
 - All scan persistence is **non-fatal** — if the DB is unavailable, analysis still returns results.
 - The scoring formula caps at 100 and uses `MAX_RAW_SCORE = 45.0` as the normalization denominator.
+- Playwright requires `python3 -m playwright install chromium` before first use.
