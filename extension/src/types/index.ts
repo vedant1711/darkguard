@@ -10,13 +10,33 @@ export type UserFeedback = "false_positive" | "confirmed" | null;
 
 /** Dark-pattern taxonomy categories. */
 export type DarkPatternCategory =
+    // Phase 1 (original)
     | "urgency_scarcity"
     | "confirmshaming"
     | "visual_interference"
     | "preselection"
     | "hidden_costs"
     | "misdirection"
-    | "fake_social_proof";
+    | "fake_social_proof"
+    // Phase 2 (consent)
+    | "asymmetric_choice"
+    | "prechecked_consent"
+    // Phase 2 (checkout)
+    | "basket_sneaking"
+    | "drip_pricing"
+    // Phase 2 (subscription)
+    | "roach_motel"
+    | "forced_continuity"
+    | "plan_comparison_trick"
+    // Phase 2 (privacy)
+    | "privacy_zuckering"
+    // Phase 2 (nagging)
+    | "notification_inflation"
+    | "persistent_nagging"
+    // Phase 2 (pricing)
+    | "price_anchoring"
+    | "bnpl_deception"
+    | "intermediate_currency";
 
 /** A single dark-pattern detection returned by the backend. */
 export interface Detection {
@@ -27,6 +47,12 @@ export interface Detection {
     severity: Severity;
     corroborated: boolean;
     user_feedback: UserFeedback;
+    /** Which analyzer produced this detection. */
+    analyzer_name: string;
+    /** Context where the pattern was found. */
+    platform_context: string;
+    /** Regulatory references (e.g., GDPR-Art7, FTC-S5). */
+    regulation_refs: string[];
 }
 
 /** Payload sent from the content script to the service worker. */
@@ -34,6 +60,8 @@ export interface CollectorPayload {
     dom_metadata: DomMetadata;
     text_content: TextContent;
     review_text: string | null;
+    checkout_flow: CheckoutFlowData | null;
+    nagging_events: NaggingEventsData | null;
 }
 
 /** DOM metadata collected by the content script. */
@@ -92,12 +120,44 @@ export interface LabeledElement {
     text: string;
 }
 
+// ── Phase 2 payload types ───────────────────────
+
+/** A single line-item in a checkout flow. */
+export interface CheckoutItem {
+    name: string;
+    price: number;
+    is_user_added: boolean;
+    item_type: "product" | "addon" | "fee" | "tax" | "shipping";
+}
+
+/** Checkout flow data for the checkout_flow_analyzer. */
+export interface CheckoutFlowData {
+    advertised_price: number | null;
+    final_price: number;
+    items: CheckoutItem[];
+}
+
+/** A single interruptive event tracked by the nagging collector. */
+export interface NaggingEvent {
+    type: "modal" | "notification_prompt" | "app_install_prompt" | "overlay";
+    text: string;
+    timestamp: number;
+}
+
+/** Nagging events data for the nagging_analyzer. */
+export interface NaggingEventsData {
+    events: NaggingEvent[];
+    has_persistent_overlay: boolean;
+}
+
 /** Full request payload sent to the backend API. */
 export interface AnalyzeRequest {
     dom_metadata: DomMetadata;
     text_content: TextContent;
     screenshot_b64: string;
     review_text: string | null;
+    checkout_flow: CheckoutFlowData | null;
+    nagging_events: NaggingEventsData | null;
     url: string;
 }
 

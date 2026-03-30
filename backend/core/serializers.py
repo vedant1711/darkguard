@@ -53,11 +53,40 @@ class TextContentSerializer(serializers.Serializer[dict[str, object]]):
     body_text = serializers.CharField(allow_blank=True)
 
 
+# ── Phase 2 payload serializers ──────────────────────────
+
+
+class CheckoutItemSerializer(serializers.Serializer[dict[str, object]]):
+    name = serializers.CharField()
+    price = serializers.FloatField()
+    is_user_added = serializers.BooleanField()
+    item_type = serializers.CharField()
+
+
+class CheckoutFlowSerializer(serializers.Serializer[dict[str, object]]):
+    advertised_price = serializers.FloatField(allow_null=True, required=False)
+    final_price = serializers.FloatField()
+    items = CheckoutItemSerializer(many=True)
+
+
+class NaggingEventSerializer(serializers.Serializer[dict[str, object]]):
+    type = serializers.CharField()
+    text = serializers.CharField(allow_blank=True)
+    timestamp = serializers.FloatField(required=False, default=0.0)
+
+
+class NaggingEventsSerializer(serializers.Serializer[dict[str, object]]):
+    events = NaggingEventSerializer(many=True)
+    has_persistent_overlay = serializers.BooleanField(default=False)
+
+
 class AnalyzeRequestSerializer(serializers.Serializer[dict[str, object]]):
     dom_metadata = DomMetadataSerializer()
     text_content = TextContentSerializer()
     screenshot_b64 = serializers.CharField()
     review_text = serializers.CharField(allow_null=True, required=False)
+    checkout_flow = CheckoutFlowSerializer(allow_null=True, required=False)
+    nagging_events = NaggingEventsSerializer(allow_null=True, required=False)
     url = serializers.URLField()
 
 

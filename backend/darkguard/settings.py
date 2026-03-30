@@ -30,6 +30,13 @@ INSTALLED_APPS: list[str] = [
     "text_analyzer",
     "visual_analyzer",
     "review_analyzer",
+    "consent_analyzer",
+    "checkout_flow_analyzer",
+    "subscription_analyzer",
+    "privacy_analyzer",
+    "nagging_analyzer",
+    "pricing_analyzer",
+    "scans",
 ]
 
 MIDDLEWARE: list[str] = [
@@ -44,7 +51,12 @@ TEMPLATES: list[dict[str, object]] = []
 
 WSGI_APPLICATION = "darkguard.wsgi.application"
 
-DATABASES: dict[str, dict[str, object]] = {}  # Stateless — no DB needed
+DATABASES: dict[str, dict[str, object]] = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
+    }
+}
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
@@ -69,6 +81,7 @@ CORS_ALLOWED_ORIGINS: list[str] = [
     "http://localhost:8000",
     "http://127.0.0.1:8000",
     "http://localhost:3000",
+    "http://localhost:5173",
 ]
 
 # Analyzer timeout (seconds)

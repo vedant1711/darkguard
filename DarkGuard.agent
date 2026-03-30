@@ -1,0 +1,347 @@
+---
+description: Complete project handover — architecture, file inventory, constraints, and continuation guide for DarkGuard
+---
+
+# DarkGuard — Complete Agent Handover
+
+> **Last updated**: 2026-03-29  
+> **Test suite**: 111 tests passing  
+> **Status**: Phases 1–4 COMPLETE. Web Dashboard is next.
+
+---
+
+## 1. Project Overview
+
+DarkGuard is an enterprise-grade dark pattern auditing platform. It consists of:
+
+1. **Chrome Extension** (Svelte + TypeScript + Vite) — collects DOM metadata, text, reviews, checkout flow data, and nagging events from web pages, strips PII before sending to the backend.
+2. **Django REST Backend** (Python 3.13) — analyzes payloads via 10 modular analyzers, enriches with regulatory mapping, scores/grades websites, persists results, and serves scan history via REST API.
+
+**Root directory**: `/Users/vedantsomani/STLP Mac Projects/Hackathons/DarkGuard/darkguard/`
+
+---
+
+## 2. Architectural Constraints (MUST FOLLOW)
+
+1. **Analyzer Isolation** — Every analyzer is a standalone module. Analyzers import ONLY from `core.*` and their own internal files. **NEVER import from another `*_analyzer/` package.**
+2. **3-Layer PII Sanitization**:
+   - Layer 1: Browser (`sanitizer.ts`) — strips email, phone, SSN, CC before data leaves the extension.
+   - Layer 2: Server (`core/sanitizer.py`) — active re-redaction on API ingress.
+   - Layer 3: Pre-LLM (`core/llm_client.py`) — sanitizes text before sending to any LLM.
+3. **Model-Agnostic LLM** — All LLM calls go through `core/llm_client.py`. Gemini 2.5 Flash is the default. NVIDIA NIM activates if `NVIDIA_API_KEY` is set. Never call LLM APIs directly from an analyzer.
+4. **Registry Pattern** — New analyzers MUST call `AnalyzerRegistry.register()` in their `__init__.py`. The registry auto-discovers analyzer packages via `AnalyzerRegistry.discover()`.
+5. **Typed Interfaces** — Each analyzer has `interfaces.py` with typed dataclasses. The `analyze()` method receives a raw `dict` and immediately converts it to the typed dataclass internally.
+
+---
+
+## 3. Complete File Inventory
+
+### Backend (`backend/`)
+
+```
+backend/
+├── manage.py
+├── pyproject.toml                    # pytest config (DJANGO_SETTINGS_MODULE, testpaths)
+├── requirements.txt                  # Django, DRF, google-genai, python-dotenv, etc.
+├── db.sqlite3                        # SQLite persistence (auto-created)
+│
+├── darkguard/                        # Django project config
+│   ├── settings.py                   # INSTALLED_APPS, DATABASES, CORS, LLM keys
+│   ├── urls.py                       # /api/ → core.urls, /api/scans/ → scans.urls
+│   ├── wsgi.py
+│   └── __init__.py
+│
+├── core/                             # Core engine (shared by all analyzers)
+│   ├── models.py                     # Detection dataclass (in-memory, NOT an ORM model)
+│   ├── interfaces.py                 # BaseAnalyzer ABC (name, required_payload_keys, analyze)
+│   ├── registry.py                   # AnalyzerRegistry (register, get_all, discover)
+│   ├── dispatcher.py                 # Async fan-out, payload key validation, corroboration
+│   ├── sanitizer.py                  # Server-side PII re-redaction (Layer 2)
+│   ├── llm_client.py                 # LLMProvider ABC → GeminiProvider / NvidiaNIMProvider
+│   ├── serializers.py                # DRF serializers (request + response, incl. checkout/nagging)
+│   ├── views.py                      # POST /api/analyze (dispatch → enrich → score → persist)
+│   ├── urls.py                       # /api/analyze
+│   ├── scoring.py                    # Dark Pattern Score (0-100, A-F grade)
+│   ├── regulatory_mapper.py          # 14 regulations, 19-category canonical mapping
+│   ├── report_generator.py           # Structured JSON audit reports
+│   └── tests/
+│       ├── test_sanitizer.py         # 11 tests
+│       ├── test_registry.py          # 5 tests
+│       ├── test_llm_client.py        # 9 tests
+│       ├── test_dispatcher_isolation.py  # 5 tests
+│       ├── test_scoring.py           # 6 tests
+│       ├── test_regulatory_mapper.py # 7 tests
+│       └── test_report_generator.py  # 5 tests
+│
+├── scans/                            # Persistence app (Django ORM)
+│   ├── models.py                     # AuditScan + DetectionRecord ORM models
+│   ├── views.py                      # GET scan_list, scan_detail, scan_compliance_report
+│   ├── urls.py                       # /api/scans/, /api/scans/<id>/, /api/scans/<id>/report/
+│   ├── migrations/
+│   │   └── 0001_initial.py
+│   └── tests/
+│       └── test_scans.py             # 9 tests (model ops + API endpoints)
+│
+├── dom_analyzer/                     # Phase 1 — prechecked inputs, button size disparity
+│   ├── interfaces.py
+│   ├── service.py
+│   └── tests/test_dom_analyzer.py    # 6 tests
+│
+├── text_analyzer/                    # Phase 1 — confirmshaming, urgency, misdirection
+│   ├── interfaces.py
+│   ├── service.py
+│   └── tests/test_text_analyzer.py   # 6 tests
+│
+├── visual_analyzer/                  # Phase 1 — LLM-based visual analysis
+│   ├── interfaces.py
+│   ├── service.py
+│   └── tests/test_visual_analyzer.py # 4 tests
+│
+├── review_analyzer/                  # Phase 1 — fake review detection (heuristic + LLM)
+│   ├── interfaces.py
+│   ├── service.py
+│   └── tests/test_review_analyzer.py # 5 tests
+│
+├── consent_analyzer/                 # Phase 2 — asymmetric choice, prechecked consent
+│   ├── interfaces.py
+│   ├── service.py
+│   └── tests/test_consent_analyzer.py # 6 tests
+│
+├── checkout_flow_analyzer/           # Phase 2 — drip pricing, basket sneaking
+│   ├── interfaces.py
+│   ├── service.py
+│   └── tests/test_checkout_analyzer.py # 5 tests
+│
+├── subscription_analyzer/            # Phase 2 — roach motel, forced continuity (LLM)
+│   ├── interfaces.py
+│   ├── service.py
+│   └── tests/test_subscription_analyzer.py # 5 tests
+│
+├── privacy_analyzer/                 # Phase 2 — privacy Zuckering, default sharing
+│   ├── interfaces.py
+│   ├── service.py
+│   └── tests/test_privacy_analyzer.py # 5 tests
+│
+├── nagging_analyzer/                 # Phase 2 — notification inflation, persistent overlays
+│   ├── interfaces.py
+│   ├── service.py
+│   └── tests/test_nagging_analyzer.py # 6 tests
+│
+└── pricing_analyzer/                 # Phase 2 — anchoring, BNPL deception (LLM)
+    ├── interfaces.py
+    ├── service.py
+    └── tests/test_pricing_analyzer.py # 6 tests
+```
+
+### Extension (`extension/`)
+
+```
+extension/
+├── package.json
+├── vite.config.ts
+├── tsconfig.json
+└── src/
+    ├── manifest.json                 # Chrome MV3 manifest
+    ├── types/index.ts                # 19 DarkPatternCategory values, Detection, payload types
+    ├── content/
+    │   ├── collector.ts              # DOM/text/review/checkout/nagging collection + MutationObserver
+    │   ├── sanitizer.ts              # Browser-side PII strip (email, phone, SSN, CC)
+    │   └── overlay.ts                # Shadow DOM overlays with category/regulation/analyzer badges
+    ├── background/
+    │   └── service-worker.ts         # Orchestrates collect → screenshot → API → overlay
+    ├── utils/
+    │   ├── api-client.ts             # POST to /api/analyze
+    │   └── screenshot.ts             # chrome.tabs.captureVisibleTab
+    └── popup/                        # Svelte popup UI (shows last scan results)
+```
+
+---
+
+## 4. API Endpoints
+
+| Method | Path | Description |
+|---|---|---|
+| `POST` | `/api/analyze` | Run all analyzers. Returns `detections[]`, `audit_report`, `scan_id` |
+| `GET` | `/api/scans/` | Paginated scan history. Query: `?url=`, `?limit=`, `?offset=` |
+| `GET` | `/api/scans/<id>/` | Single scan with all detection records |
+| `GET` | `/api/scans/<id>/report/` | Full compliance audit report (JSON) |
+
+### POST /api/analyze — Request payload
+
+```json
+{
+  "dom_metadata": { "hidden_elements": [], "interactive_elements": [], "prechecked_inputs": [], "url": "..." },
+  "text_content": { "button_labels": [], "headings": [], "body_text": "..." },
+  "screenshot_b64": "...",
+  "review_text": "..." | null,
+  "checkout_flow": { "advertised_price": 49.99, "final_price": 67.48, "items": [...] } | null,
+  "nagging_events": { "events": [...], "has_persistent_overlay": false } | null,
+  "url": "https://..."
+}
+```
+
+### POST /api/analyze — Response
+
+```json
+{
+  "detections": [
+    {
+      "category": "drip_pricing",
+      "element_selector": "div.price",
+      "confidence": 0.92,
+      "explanation": "...",
+      "severity": "high",
+      "corroborated": true,
+      "analyzer_name": "checkout_flow",
+      "platform_context": "ecommerce",
+      "regulation_refs": ["FTC-S5", "CRD-Art6"]
+    }
+  ],
+  "audit_report": {
+    "metadata": { "url": "...", "timestamp": "..." },
+    "score": { "total": 55.2, "grade": "D", "pattern_count": 5 },
+    "category_summary": { ... },
+    "regulations_violated": [ { "code": "FTC-S5", "name": "...", "jurisdiction": "US" } ],
+    "detections": [ ... ]
+  },
+  "scan_id": 42
+}
+```
+
+---
+
+## 5. LLM Provider Routing
+
+Configured via env vars in `.env.example`:
+
+| Purpose | NVIDIA NIM Model | Gemini Fallback |
+|---|---|---|
+| `text_classification` | `meta/llama-3.1-70b-instruct` | `gemini-2.5-flash` |
+| `visual_analysis` | `liuhaotian/llava-v1.6-mistral-7b` | `gemini-2.5-flash` |
+| `review_analysis` | `meta/llama-3.1-70b-instruct` | `gemini-2.5-flash` |
+| `general` | — | `gemini-2.5-flash` |
+
+**Env vars**: `GOOGLE_API_KEY`, `NVIDIA_API_KEY`, `LLM_PROVIDER` (auto/gemini/nvidia).
+
+**Analyzers using LLM**: `visual_analyzer`, `review_analyzer`, `subscription_analyzer`, `pricing_analyzer`.
+
+---
+
+## 6. Detection Categories (19 total)
+
+| Phase | Categories |
+|---|---|
+| Phase 1 | `urgency_scarcity`, `confirmshaming`, `visual_interference`, `preselection`, `hidden_costs`, `misdirection`, `fake_social_proof` |
+| Phase 2 | `asymmetric_choice`, `prechecked_consent`, `basket_sneaking`, `drip_pricing`, `roach_motel`, `forced_continuity`, `plan_comparison_trick`, `privacy_zuckering`, `notification_inflation`, `persistent_nagging`, `price_anchoring`, `bnpl_deception`, `intermediate_currency` |
+
+---
+
+## 7. Regulatory Mapping (14 regulations)
+
+`FTC-S5`, `FTC-DeceptivePricing`, `FTC-NegativeOption`, `ROSCA`, `TILA`, `GDPR-Art7`, `GDPR-Art25`, `DSA-Art25`, `CRD-Art6`, `CRD-Art22`, `ePrivacy`, `CCPA`, `UCPD`
+
+All 19 categories are mapped to their applicable regulations in `core/regulatory_mapper.py`.
+
+---
+
+## 8. How to Run
+
+```bash
+# Backend
+cd darkguard/backend
+pip install -r requirements.txt
+python3 manage.py migrate
+python3 manage.py runserver           # http://localhost:8000
+
+# Tests (111 tests)
+python3 -m pytest -v
+
+# Extension
+cd darkguard/extension
+npm install
+npx tsc --noEmit                      # type-check
+npx vite build                        # build to dist/
+
+# Load Extension
+# Chrome → Extensions → Load Unpacked → select extension/dist/
+```
+
+---
+
+## 9. How to Add a New Analyzer
+
+Follow this exact pattern:
+
+```
+new_analyzer/
+├── __init__.py          # AnalyzerRegistry.register(NewAnalyzerService())
+├── interfaces.py        # Typed payload dataclass
+├── service.py           # class NewAnalyzerService(BaseAnalyzer)
+└── tests/
+    ├── __init__.py
+    └── test_new_analyzer.py
+```
+
+**`__init__.py`**:
+```python
+from core.registry import AnalyzerRegistry
+from new_analyzer.service import NewAnalyzerService
+AnalyzerRegistry.register(NewAnalyzerService())
+```
+
+**`service.py`** must implement:
+```python
+class NewAnalyzerService(BaseAnalyzer):
+    @property
+    def name(self) -> str: return "new_analyzer"
+
+    @property
+    def required_payload_keys(self) -> list[str]: return ["text_content"]
+
+    async def analyze(self, payload: dict[str, object]) -> list[Detection]: ...
+```
+
+Then add `"new_analyzer"` to `INSTALLED_APPS` in `settings.py` and add `"new_analyzer/tests"` to `testpaths` in `pyproject.toml`.
+
+---
+
+## 10. Isolation Verification
+
+Run this grep — it MUST return NO results:
+
+```bash
+grep -r "from.*_analyzer" backend/ --include="*.py" | grep -v __pycache__ | grep -v test | grep -v __init__
+```
+
+---
+
+## 11. Remaining Roadmap (from Catalog)
+
+### Phase 5: Web Dashboard (NEXT)
+- Vite + React frontend dashboard
+- Submit URLs for auditing
+- View scan history with filtering by grade/URL/date
+- Per-scan detail view with detection cards
+- Side-by-side site comparison
+- Export compliance reports (PDF/HTML)
+
+### Phase 6: Advanced Capabilities
+- ML Classifier (RoBERTa fine-tuned on dark pattern corpus)
+- Browser Automation (Playwright) for multi-page flow crawling
+- Scheduled Auditing (Celery) for regression tracking
+- Comparative Benchmarking against industry averages
+- A/B Test Detection
+- Mobile App Auditing (Appium)
+
+### Catalog Reference
+The full 42-pattern taxonomy is documented in:
+  `.gemini/antigravity/brain/26163013-e4af-404c-884e-0985b5ed3dd7/dark_patterns_catalog_and_expansion_plan.md`
+
+---
+
+## 12. Known Notes
+
+- `core/models.py` contains a **dataclass** (`Detection`), NOT a Django ORM model. ORM persistence lives in `scans/models.py` to avoid a circular import with analyzer `__init__.py` chains.
+- The extension's `tsconfig.json` references `@tsconfig/svelte` which may need `npm install` to resolve.
+- All scan persistence is **non-fatal** — if the DB is unavailable, analysis still returns results.
+- The scoring formula caps at 100 and uses `MAX_RAW_SCORE = 45.0` as the normalization denominator.

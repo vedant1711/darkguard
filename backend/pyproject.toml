@@ -13,4 +13,5 @@ testpaths = [
     "privacy_analyzer/tests",
     "nagging_analyzer/tests",
     "pricing_analyzer/tests",
+    "scans/tests",
 ]

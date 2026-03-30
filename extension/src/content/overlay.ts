@@ -12,6 +12,32 @@ const SEVERITY_COLORS: Record<string, string> = {
     low: "rgba(59, 130, 246, 0.5)",     // blue
 };
 
+/** Human-readable category labels. */
+const CATEGORY_LABELS: Record<string, string> = {
+    // Phase 1
+    urgency_scarcity: "Urgency / Scarcity",
+    confirmshaming: "Confirmshaming",
+    visual_interference: "Visual Interference",
+    preselection: "Preselection",
+    hidden_costs: "Hidden Costs",
+    misdirection: "Misdirection",
+    fake_social_proof: "Fake Social Proof",
+    // Phase 2
+    asymmetric_choice: "Asymmetric Choice",
+    prechecked_consent: "Pre-checked Consent",
+    basket_sneaking: "Basket Sneaking",
+    drip_pricing: "Drip Pricing",
+    roach_motel: "Roach Motel",
+    forced_continuity: "Forced Continuity",
+    plan_comparison_trick: "Plan Comparison Trick",
+    privacy_zuckering: "Privacy Zuckering",
+    notification_inflation: "Notification Inflation",
+    persistent_nagging: "Persistent Nagging",
+    price_anchoring: "Price Anchoring",
+    bnpl_deception: "BNPL Deception",
+    intermediate_currency: "Intermediate Currency",
+};
+
 const OVERLAY_ATTR = "data-darkguard-overlay";
 
 /** Remove all existing overlays from the page. */
@@ -47,7 +73,22 @@ export function renderOverlays(detections: Detection[]): void {
 
         const borderColor = SEVERITY_COLORS[det.severity] ?? SEVERITY_COLORS["low"];
         const corroboratedBadge = det.corroborated
-            ? '<span class="badge">⚠ Corroborated</span>'
+            ? '<span class="badge corr">⚠ Corroborated</span>'
+            : "";
+
+        const categoryLabel =
+            CATEGORY_LABELS[det.category] ??
+            det.category.replace(/_/g, " ");
+
+        // Regulation refs badge
+        const refsHtml =
+            det.regulation_refs && det.regulation_refs.length > 0
+                ? `<div class="refs">${det.regulation_refs.map((r) => `<span class="ref-badge">${r}</span>`).join(" ")}</div>`
+                : "";
+
+        // Analyzer source badge
+        const analyzerBadge = det.analyzer_name
+            ? `<span class="badge source">${det.analyzer_name}</span>`
             : "";
 
         shadow.innerHTML = `
@@ -72,7 +113,7 @@ export function renderOverlays(detections: Detection[]): void {
           font: 13px/1.4 'Segoe UI', system-ui, sans-serif;
           padding: 8px 12px;
           border-radius: 8px;
-          max-width: 320px;
+          max-width: 360px;
           pointer-events: auto;
           opacity: 0;
           transition: opacity 0.15s ease;
@@ -87,7 +128,6 @@ export function renderOverlays(detections: Detection[]): void {
           font-weight: 600;
           color: #f38ba8;
           margin-bottom: 4px;
-          text-transform: capitalize;
         }
         .explanation {
           font-size: 12px;
@@ -100,22 +140,45 @@ export function renderOverlays(detections: Detection[]): void {
         }
         .badge {
           display: inline-block;
-          background: #f38ba8;
-          color: #1e1e2e;
           font-size: 10px;
           font-weight: 700;
           padding: 2px 6px;
           border-radius: 4px;
           margin-left: 6px;
+          vertical-align: middle;
+        }
+        .badge.corr {
+          background: #f38ba8;
+          color: #1e1e2e;
+        }
+        .badge.source {
+          background: #89b4fa;
+          color: #1e1e2e;
+        }
+        .refs {
+          margin-top: 4px;
+          display: flex;
+          flex-wrap: wrap;
+          gap: 4px;
+        }
+        .ref-badge {
+          display: inline-block;
+          font-size: 9px;
+          font-weight: 600;
+          padding: 1px 5px;
+          border-radius: 3px;
+          background: #313244;
+          color: #a6e3a1;
         }
       </style>
       <div class="overlay-border" style="pointer-events: auto; cursor: help;"></div>
       <div class="tooltip">
         <div class="category">
-          ${det.category.replace(/_/g, " ")}${corroboratedBadge}
+          ${categoryLabel}${corroboratedBadge}${analyzerBadge}
         </div>
         <div class="explanation">${det.explanation}</div>
         <div class="confidence">Confidence: ${Math.round(det.confidence * 100)}% · ${det.severity}</div>
+        ${refsHtml}
       </div>
     `;
 

@@ -2,6 +2,7 @@
 core/models.py — Detection dataclass.
 
 Represents a single dark-pattern detection returned by any analyzer.
+ORM models for persistence live in the `scans` app.
 """
 
 from __future__ import annotations
@@ -16,7 +17,7 @@ UserFeedback = Literal["false_positive", "confirmed"] | None
 
 @dataclass
 class Detection:
-    """A single dark-pattern detection."""
+    """A single dark-pattern detection (in-memory)."""
 
     category: str
     """Taxonomy category (e.g. 'confirmshaming', 'urgency_scarcity')."""

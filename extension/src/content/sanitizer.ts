@@ -3,11 +3,18 @@
 // Strips sensitive data before payloads leave the browser.
 // ──────────────────────────────────────────────
 
-import type { DomMetadata, TextContent, ElementInfo } from "../types/index";
+import type {
+    DomMetadata,
+    TextContent,
+    ElementInfo,
+    CheckoutFlowData,
+    NaggingEventsData,
+} from "../types/index";
 
 const EMAIL_REGEX = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
 const PHONE_REGEX = /(\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/g;
 const SSN_REGEX = /\b\d{3}-\d{2}-\d{4}\b/g;
+const CC_REGEX = /\b\d{4}[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{4}\b/g;
 
 const PII_REPLACEMENT = "[REDACTED]";
 
@@ -21,7 +28,8 @@ function redactPiiFromText(text: string): string {
     return text
         .replace(EMAIL_REGEX, PII_REPLACEMENT)
         .replace(PHONE_REGEX, PII_REPLACEMENT)
-        .replace(SSN_REGEX, PII_REPLACEMENT);
+        .replace(SSN_REGEX, PII_REPLACEMENT)
+        .replace(CC_REGEX, PII_REPLACEMENT);
 }
 
 function sanitizeElementInfo(el: ElementInfo): ElementInfo {
@@ -78,4 +86,32 @@ export function sanitizeTextContent(content: TextContent): TextContent {
 export function sanitizeReviewText(text: string | null): string | null {
     if (text === null) return null;
     return redactPiiFromText(text);
+}
+
+/** Sanitize checkout flow data: redact PII from item names. */
+export function sanitizeCheckoutFlow(
+    data: CheckoutFlowData | null
+): CheckoutFlowData | null {
+    if (!data) return null;
+    return {
+        ...data,
+        items: data.items.map((item) => ({
+            ...item,
+            name: redactPiiFromText(item.name),
+        })),
+    };
+}
+
+/** Sanitize nagging events: redact PII from event text. */
+export function sanitizeNaggingEvents(
+    data: NaggingEventsData | null
+): NaggingEventsData | null {
+    if (!data) return null;
+    return {
+        ...data,
+        events: data.events.map((ev) => ({
+            ...ev,
+            text: redactPiiFromText(ev.text),
+        })),
+    };
 }

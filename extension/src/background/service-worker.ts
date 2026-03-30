@@ -19,12 +19,14 @@ async function runAnalysis(tabId: number): Promise<void> {
         // 2. Capture a screenshot of the visible tab
         const screenshotB64 = await captureScreenshot();
 
-        // 3. Build the API request
+        // 3. Build the API request (include all Phase 2 payload types)
         const request: AnalyzeRequest = {
             dom_metadata: payload.dom_metadata,
             text_content: payload.text_content,
             screenshot_b64: screenshotB64,
             review_text: payload.review_text,
+            checkout_flow: payload.checkout_flow ?? null,
+            nagging_events: payload.nagging_events ?? null,
             url: payload.dom_metadata.url,
         };
 
