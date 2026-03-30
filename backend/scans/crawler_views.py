@@ -42,27 +42,38 @@ def crawl_and_analyze(request: Request) -> Response:
             status=status.HTTP_400_BAD_REQUEST,
         )
 
-    # 1. Crawl the URL
+    # 1. Crawl the URL (with graceful fallback if Playwright unavailable)
+    crawl_available = False
     try:
         from crawler.service import crawl_url_sync
         result = crawl_url_sync(url)
+        crawl_available = True
+        payload: dict[str, object] = {
+            "dom_metadata": result.dom_metadata,
+            "text_content": result.text_content,
+            "screenshot_b64": result.screenshot_b64,
+            "review_text": result.review_text,
+            "checkout_flow": result.checkout_flow,
+            "nagging_events": result.nagging_events,
+            "url": url,
+        }
     except Exception as e:
-        logger.exception("Crawl failed for %s", url)
-        return Response(
-            {"error": f"Failed to crawl URL: {str(e)[:200]}"},
-            status=status.HTTP_502_BAD_GATEWAY,
-        )
-
-    # 2. Build payload from crawl result
-    payload: dict[str, object] = {
-        "dom_metadata": result.dom_metadata,
-        "text_content": result.text_content,
-        "screenshot_b64": result.screenshot_b64,
-        "review_text": result.review_text,
-        "checkout_flow": result.checkout_flow,
-        "nagging_events": result.nagging_events,
-        "url": url,
-    }
+        logger.warning("Crawl unavailable for %s (%s) — using minimal payload", url, e)
+        # Fallback: run LLM-based analyzers with just the URL
+        payload = {
+            "dom_metadata": {
+                "hidden_elements": [],
+                "interactive_elements": [],
+                "prechecked_inputs": [],
+                "url": url,
+            },
+            "text_content": {"button_labels": [], "headings": [], "body_text": ""},
+            "screenshot_b64": "",
+            "review_text": None,
+            "checkout_flow": None,
+            "nagging_events": None,
+            "url": url,
+        }
 
     # 3. Sanitize
     payload = sanitize_payload(payload)
@@ -120,6 +131,7 @@ def crawl_and_analyze(request: Request) -> Response:
             "audit_report": report,
             "scan_id": scan_id,
             "benchmark": asdict(benchmark),
+            "crawl_available": crawl_available,
         },
         status=status.HTTP_200_OK,
     )
