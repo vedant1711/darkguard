@@ -18,6 +18,7 @@ DEBUG = os.getenv("DJANGO_DEBUG", "True").lower() in ("true", "1", "yes")
 ALLOWED_HOSTS: list[str] = [
     h.strip()
     for h in os.getenv("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+    if h.strip()
 ]
 
 INSTALLED_APPS: list[str] = [
@@ -42,6 +43,7 @@ INSTALLED_APPS: list[str] = [
 MIDDLEWARE: list[str] = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.middleware.common.CommonMiddleware",
 ]
 
@@ -51,16 +53,27 @@ TEMPLATES: list[dict[str, object]] = []
 
 WSGI_APPLICATION = "darkguard.wsgi.application"
 
-DATABASES: dict[str, dict[str, object]] = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+# Database — use PostgreSQL in production (DATABASE_URL set by Render)
+# Falls back to SQLite for local development.
+_db_url = os.getenv("DATABASE_URL", "")
+if _db_url:
+    import dj_database_url  # type: ignore[import-untyped]
+    DATABASES: dict[str, dict[str, object]] = {
+        "default": dj_database_url.config(default=_db_url, conn_max_age=600)
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # DRF
 REST_FRAMEWORK: dict[str, object] = {
@@ -73,7 +86,13 @@ REST_FRAMEWORK: dict[str, object] = {
     "UNAUTHENTICATED_USER": None,
 }
 
-# CORS — locked to chrome-extension:// and localhost for dev
+# CORS — locked to chrome-extension:// and localhost for dev;
+# in production add your Vercel dashboard URL via CORS_ALLOWED_ORIGINS env var.
+_extra_cors = [
+    o.strip()
+    for o in os.getenv("CORS_ALLOWED_ORIGINS", "").split(",")
+    if o.strip()
+]
 CORS_ALLOWED_ORIGIN_REGEXES: list[str] = [
     r"^chrome-extension://.*$",
 ]
@@ -82,6 +101,7 @@ CORS_ALLOWED_ORIGINS: list[str] = [
     "http://127.0.0.1:8000",
     "http://localhost:3000",
     "http://localhost:5173",
+    *_extra_cors,
 ]
 
 # Analyzer timeout (seconds)

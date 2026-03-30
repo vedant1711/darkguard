@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: darkguard-backend
+    runtime: python
+    rootDir: backend
+    buildCommand: |
+      pip install -r requirements.txt
+      python manage.py collectstatic --no-input
+      python manage.py migrate
+    startCommand: gunicorn darkguard.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 60
+    healthCheckPath: /api/analyze
+    envVars:
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_DEBUG
+        value: "False"
+      - key: DJANGO_ALLOWED_HOSTS
+        value: "darkguard-backend.onrender.com"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: darkguard-db
+          property: connectionString
+      - key: CORS_ALLOWED_ORIGINS
+        value: ""           # Fill in with your Vercel dashboard URL after deploy
+      - key: GOOGLE_API_KEY
+        sync: false         # Set manually in Render dashboard
+      - key: NVIDIA_API_KEY
+        sync: false         # Optional
+      - key: LLM_PROVIDER
+        value: "auto"
+      - key: ANALYZER_TIMEOUT
+        value: "30"
+
+databases:
+  - name: darkguard-db
+    plan: free
