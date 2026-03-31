@@ -58,8 +58,21 @@ def crawl_and_analyze(request: Request) -> Response:
             "url": url,
         }
     except Exception as e:
-        logger.warning("Crawl unavailable for %s (%s) — using minimal payload", url, e)
-        # Fallback: run LLM-based analyzers with just the URL
+        logger.warning("Crawl unavailable for %s (%s) — using requests fallback", url, e)
+        # Fallback: run LLM-based analyzers with just basic text from the URL
+        import requests
+        import re
+        body_text = ""
+        try:
+            res = requests.get(
+                url, timeout=10, headers={"User-Agent": "Mozilla/5.0"}
+            )
+            # Extremely basic HTML tag stripping
+            clean_text = re.sub(r'<[^>]+>', ' ', res.text)
+            body_text = re.sub(r'\s+', ' ', clean_text).strip()[:5000]
+        except Exception as fetch_err:
+            logger.warning("Fallback fetch failed: %s", fetch_err)
+
         payload = {
             "dom_metadata": {
                 "hidden_elements": [],
@@ -67,13 +80,14 @@ def crawl_and_analyze(request: Request) -> Response:
                 "prechecked_inputs": [],
                 "url": url,
             },
-            "text_content": {"button_labels": [], "headings": [], "body_text": ""},
+            "text_content": {"button_labels": [], "headings": [], "body_text": body_text},
             "screenshot_b64": "",
             "review_text": None,
             "checkout_flow": None,
             "nagging_events": None,
             "url": url,
         }
+
 
     # 3. Sanitize
     payload = sanitize_payload(payload)
