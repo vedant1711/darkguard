@@ -22,6 +22,12 @@ graph TB
         TXT["Text Analyzer<br/><i>Regex + NLP</i>"]
         VIS["Visual Analyzer<br/><i>ElementMap → LLM</i>"]
         REV["Review Analyzer<br/><i>Heuristics + LLM</i>"]
+        CON["Consent Analyzer<br/><i>Rules</i>"]
+        CHK["Checkout Analyzer<br/><i>Rules</i>"]
+        SUB["Subscription Analyzer<br/><i>LLM</i>"]
+        PRV["Privacy Analyzer<br/><i>Rules</i>"]
+        NAG["Nagging Analyzer<br/><i>Rules</i>"]
+        PRC["Pricing Analyzer<br/><i>LLM</i>"]
     end
 
     subgraph External["External Services"]
@@ -37,7 +43,7 @@ graph TB
     DISP -->|"asyncio.wait_for(10s)"| DOM
     DISP -->|"asyncio.wait_for(10s)"| TXT
     DISP -->|"asyncio.wait_for(10s)"| VIS
-    DISP -->|"asyncio.wait_for(10s)"| REV
+    DISP -->|"asyncio.wait_for(10s)"| REV\n    DISP -->|"asyncio.wait_for(10s)"| CON\n    DISP -->|"asyncio.wait_for(10s)"| CHK\n    DISP -->|"asyncio.wait_for(10s)"| SUB\n    DISP -->|"asyncio.wait_for(10s)"| PRV\n    DISP -->|"asyncio.wait_for(10s)"| NAG\n    DISP -->|"asyncio.wait_for(10s)"| PRC
     VIS -->|"ElementMap prompt"| GEMINI
     REV -->|"Review text prompt"| GEMINI
     DISP -->|"Merged detections"| API
@@ -119,6 +125,12 @@ graph TD
         TA["text_analyzer/<br/>service.py"]
         VA["visual_analyzer/<br/>service.py<br/>element_map_builder.py"]
         RA["review_analyzer/<br/>service.py"]
+        CA["consent_analyzer/<br/>service.py"]
+        CFA["checkout_flow_analyzer/<br/>service.py"]
+        SA["subscription_analyzer/<br/>service.py"]
+        PA["privacy_analyzer/<br/>service.py"]
+        NA["nagging_analyzer/<br/>service.py"]
+        PRA["pricing_analyzer/<br/>service.py"]
     end
 
     URLS --> VIEWS

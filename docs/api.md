@@ -18,9 +18,20 @@ None required (stateless analysis). CORS is locked to:
 
 ---
 
+## Endpoints Overview
+
+| Method | Path | Description |
+|---|---|---|
+| `POST` | `/api/analyze` | Run all analyzers. Returns `detections[]`, `audit_report`, `scan_id` |
+| `POST` | `/api/scans/crawl` | Server-side Playwright crawl + full analysis pipeline |
+| `GET` | `/api/scans/` | Paginated scan history |
+| `GET` | `/api/scans/<id>/` | Single scan with all detection records |
+| `GET` | `/api/scans/<id>/report/` | Full compliance audit report (JSON) |
+| `GET` | `/api/scans/<id>/report/pdf` | Styled HTML compliance report (print-to-PDF) |
+
 ## `POST /api/analyze`
 
-Run all four dark-pattern analyzers on a webpage payload.
+Run all ten dark-pattern analyzers on a webpage payload.
 
 ### Request
 
@@ -180,7 +191,7 @@ Run all four dark-pattern analyzers on a webpage payload.
 | Field | Type | Description |
 |---|---|---|
 | `detections` | `array` | List of detected dark patterns |
-| `detections[].category` | `string` | One of: `preselection`, `visual_interference`, `confirmshaming`, `urgency_scarcity`, `misdirection`, `fake_social_proof`, `hidden_costs` |
+| `detections[].category` | `string` | 19 categories including: `preselection`, `visual_interference`, `confirmshaming`, `urgency_scarcity`, `misdirection`, `fake_social_proof`, `hidden_costs`, `asymmetric_choice`, `prechecked_consent`, `basket_sneaking`, `drip_pricing`, `roach_motel`, `forced_continuity`, `plan_comparison_trick`, `privacy_zuckering`, `notification_inflation`, `persistent_nagging`, `price_anchoring`, `bnpl_deception`, `intermediate_currency` |
 | `detections[].element_selector` | `string` | CSS selector of the flagged element |
 | `detections[].confidence` | `float` | Confidence score `0.0 – 1.0` |
 | `detections[].explanation` | `string` | Human-readable explanation |

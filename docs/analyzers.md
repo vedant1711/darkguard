@@ -1,10 +1,10 @@
 # DarkGuard Analyzers — Deep Dive
 
-> Detailed documentation for each of the four dark-pattern analyzers, including detection rules, confidence scoring, and category taxonomy.
+> Detailed documentation for each of the ten dark-pattern analyzers, including detection rules, confidence scoring, and category taxonomy.
 
 ## Dark Pattern Taxonomy
 
-DarkGuard detects patterns across **7 categories**:
+DarkGuard detects patterns across **19 categories**:
 
 | Category | ID | Description |
 |---|---|---|

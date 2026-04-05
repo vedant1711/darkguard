@@ -1,6 +1,6 @@
 # 🛡️ DarkGuard
 
-> A Chrome MV3 browser extension that detects dark patterns on any webpage using four independent AI/rules-based analyzers, with inline overlay explanations.
+> A Chrome MV3 browser extension that detects dark patterns on any webpage using ten independent AI/rules-based analyzers, with inline overlay explanations.
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 [![Python 3.12+](https://img.shields.io/badge/Python-3.12+-3776AB.svg)](https://python.org)
@@ -10,7 +10,7 @@
 
 ## Overview
 
-DarkGuard combines a **Chrome extension** (content scripts + service worker) with a **Django REST backend** that runs four standalone analyzers concurrently. Each analyzer inspects a different signal — DOM metadata, visible text, page layout, and review content — then results are merged, deduplicated, and displayed as inline overlays directly on the webpage.
+DarkGuard combines a **Chrome extension** (content scripts + service worker) with a **Django REST backend** that runs ten standalone analyzers concurrently. Each analyzer inspects a different signal — DOM metadata, visible text, page layout, and review content — then results are merged, deduplicated, and displayed as inline overlays directly on the webpage.
 
 ### Key Capabilities
 
@@ -109,6 +109,12 @@ darkguard/
 | **Text** | Button labels, headings, body text | Regex / NLP | Confirmshaming, Urgency/Scarcity, Misdirection |
 | **Visual** | Page layout (ElementMap from DOM metadata) | ElementMap → LLM | Visual Interference, Misdirection |
 | **Review** | Review text blobs | Heuristics + LLM | Fake Social Proof |
+| **Consent** | Pre-checked consent / choice architecture | Rules engine | Asymmetric choice, prechecked consent |
+| **Checkout Flow** | Pricing changes / extra items | Rules engine | Basket sneaking, drip pricing |
+| **Subscription** | Continuity terms | LLM | Roach motel, forced continuity |
+| **Privacy** | Default sharing settings | Rules engine | Privacy Zuckering |
+| **Nagging** | Repeated prompts / overlays | Rules engine | Notification inflation, persistent nagging |
+| **Pricing** | Multi-tier pricing / BNPL options | LLM | Price anchoring, BNPL deception |
 
 > 📖 Deep dive: **[docs/analyzers.md](docs/analyzers.md)**
 

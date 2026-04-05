@@ -14,9 +14,9 @@ flowchart TD
     D --> D2["Interactive elements<br/>(buttons, links + styles)"]
     D --> D3["Pre-checked inputs<br/>(checkbox/radio with checked)"]
     D --> D4["Text content<br/>(labels, headings, body)"]
-    D --> D5["Review text<br/>(review containers)"]
+    D --> D5["Review text<br/>(review containers)"]\n    D --> D6["Checkout flow<br/>(pricing, cart)"]\n    D --> D7["Nagging events<br/>(overlays, toasts)"]
 
-    D1 & D2 & D3 & D4 & D5 --> E["sanitizer.ts strips PII"]
+    D1 & D2 & D3 & D4 & D5 & D6 & D7 --> E["sanitizer.ts strips PII"]
     
     E --> E1["Redact emails → [REDACTED]"]
     E --> E2["Redact phones → [REDACTED]"]
@@ -33,7 +33,7 @@ flowchart TD
     
     I --> J["Backend Dispatcher"]
     
-    J --> K["4 analyzers run in parallel"]
+    J --> K["10 analyzers run in parallel"]
     
     K --> L["Merge + Deduplicate +<br/>Corroborate + Sort"]
     
@@ -106,19 +106,25 @@ flowchart TD
     REQ["AnalyzeRequest"] --> VALID["AnalyzeRequestSerializer<br/>validates payload"]
     VALID --> DISP["dispatcher.dispatch()"]
     
-    DISP --> |"asyncio.gather()"| FORK["Fan-out to 4 analyzers"]
+    DISP --> |"asyncio.gather()"| FORK["Fan-out to 10 analyzers"]
     
     FORK --> DOM["DomAnalyzerService.analyze()"]
     FORK --> TXT["TextAnalyzerService.analyze()"]
     FORK --> VIS["VisualAnalyzerService.analyze()"]
     FORK --> REV["ReviewAnalyzerService.analyze()"]
+    FORK --> CON["ConsentAnalyzerService.analyze()"]
+    FORK --> CHK["CheckoutFlowAnalyzerService.analyze()"]
+    FORK --> SUB["SubscriptionAnalyzerService.analyze()"]
+    FORK --> PRV["PrivacyAnalyzerService.analyze()"]
+    FORK --> NAG["NaggingAnalyzerService.analyze()"]
+    FORK --> PRC["PricingAnalyzerService.analyze()"]
 
-    DOM --> DOM_R["Detections:<br/>preselection,<br/>visual_interference"]
+    DOM --> DOM_R\n    CON --> CON_R\n    CHK --> CHK_R\n    SUB --> SUB_R\n    PRV --> PRV_R\n    NAG --> NAG_R\n    PRC --> PRC_R["Detections:<br/>preselection,<br/>visual_interference"]
     TXT --> TXT_R["Detections:<br/>confirmshaming,<br/>urgency_scarcity,<br/>misdirection"]
     VIS --> VIS_R["Detections:<br/>visual_interference,<br/>misdirection"]
     REV --> REV_R["Detections:<br/>fake_social_proof"]
 
-    DOM_R & TXT_R & VIS_R & REV_R --> MERGE["Merge all detections"]
+    DOM_R & TXT_R & VIS_R & REV_R & CON_R & CHK_R & SUB_R & PRV_R & NAG_R & PRC_R --> MERGE["Merge all detections"]
     MERGE --> DEDUP["Deduplicate by<br/>(element_selector, category)"]
     DEDUP --> CORR["Set corroborated=True<br/>if 2+ analyzers flagged same"]
     CORR --> SORT["Sort by confidence DESC"]
