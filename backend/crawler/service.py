@@ -18,8 +18,8 @@ logger = logging.getLogger(__name__)
 
 # Max time to wait for page load (ms)
 PAGE_TIMEOUT = 15_000
-# Max number of elements to collect per category
-MAX_ELEMENTS = 50
+# Max number of elements to collect per category (matches extension collector.ts)
+MAX_ELEMENTS = 100
 
 
 @dataclass
@@ -86,9 +86,9 @@ async def _extract_dom_metadata(page: Page, url: str) -> dict:
             }
         });
 
-        // Interactive elements (buttons, links, inputs)
+        // Interactive elements — match extension selector: button, [role="button"], a[href], input[type="submit"], input[type="button"], select
         const interactive = [];
-        document.querySelectorAll('button, a, input, select, [role="button"]').forEach(el => {
+        document.querySelectorAll('button, [role="button"], a[href], input[type="submit"], input[type="button"], select').forEach(el => {
             if (interactive.length >= maxElements) return;
             interactive.push(toInfo(el));
         });
@@ -123,7 +123,8 @@ async def _extract_text_content(page: Page) -> dict:
         }
 
         const buttons = [];
-        document.querySelectorAll('button, [role="button"], a.btn, a.button, input[type="submit"]').forEach(el => {
+        // Match extension selector: button, [role="button"], a.btn, a.button, input[type="submit"]
+        document.querySelectorAll('button, [role="button"], a[href], input[type="submit"]').forEach(el => {
             const text = (el.textContent || el.value || '').trim();
             if (text && buttons.length < 50) {
                 buttons.push({ selector: getSelector(el), text: text.slice(0, 200) });

@@ -31,9 +31,8 @@ _DECLINE_RE = re.compile(
 # Maximum vertical distance (px) for two buttons to be considered "nearby"
 _PROXIMITY_PX = 300
 
-# Size ratio thresholds
-_SEMANTIC_RATIO_THRESHOLD = 3.0   # opposing-choice pairs (accept vs decline)
-_GENERIC_RATIO_THRESHOLD = 8.0    # unrelated pairs (needs much larger disparity)
+# Size ratio threshold for opposing-choice button pairs
+_SEMANTIC_RATIO_THRESHOLD = 3.0   # accept vs decline, agree vs disagree, etc.
 
 
 class DomAnalyzerService(BaseAnalyzer):
@@ -143,12 +142,11 @@ class DomAnalyzerService(BaseAnalyzer):
     def _check_size_disparity(
         self, elements: list[DomElementInfo]
     ) -> list[Detection]:
-        """Flag nearby button pairs where one is much larger than the other.
+        """Flag opposing-choice button pairs where one is much larger.
 
-        Three key improvements over the naive approach:
-        1. Proximity: only compare buttons within _PROXIMITY_PX vertical distance
-        2. Semantic: opposing-choice pairs (accept/decline) use a lower threshold
-        3. Dedup:  each smaller element is flagged at most once (worst ratio wins)
+        ONLY compares buttons that represent competing choices:
+        accept/decline, agree/disagree, subscribe/cancel, etc.
+        Random unrelated buttons are never compared.
         """
         buttons = [
             e for e in elements
@@ -163,6 +161,10 @@ class DomAnalyzerService(BaseAnalyzer):
             y_a = self._get_y(btn_a)
 
             for btn_b in buttons[i + 1:]:
+                # ── Must be an opposing-choice pair ──
+                if not self._is_semantic_pair(btn_a, btn_b):
+                    continue
+
                 area_b = self._get_area(btn_b)
                 y_b = self._get_y(btn_b)
 
@@ -172,38 +174,22 @@ class DomAnalyzerService(BaseAnalyzer):
 
                 ratio = max(area_a, area_b) / min(area_a, area_b)
 
-                # ── Threshold selection ──
-                is_semantic = self._is_semantic_pair(btn_a, btn_b)
-                threshold = _SEMANTIC_RATIO_THRESHOLD if is_semantic else _GENERIC_RATIO_THRESHOLD
-
-                if ratio < threshold:
+                if ratio < _SEMANTIC_RATIO_THRESHOLD:
                     continue
 
                 smaller = btn_a if area_a < area_b else btn_b
                 larger = btn_a if area_a >= area_b else btn_b
 
-                # Confidence: semantic pairs get a boost
-                if is_semantic:
-                    confidence = min(0.7 + (ratio - 3) * 0.05, 0.95)
-                else:
-                    confidence = min(0.5 + (ratio - 8) * 0.05, 0.85)
-
-                explanation_detail = ""
-                if is_semantic:
-                    explanation_detail = (
-                        f" The '{larger.text_content.strip()[:30]}' button is "
-                        f"visually dominant over '{smaller.text_content.strip()[:30]}', "
-                        f"steering users toward one choice."
-                    )
+                confidence = min(0.7 + (ratio - 3) * 0.05, 0.95)
 
                 det = Detection(
                     category="visual_interference",
                     element_selector=smaller.selector,
                     confidence=confidence,
                     explanation=(
-                        f"This button is {ratio:.1f}× smaller than a "
-                        f"nearby button, making it easy to overlook."
-                        f"{explanation_detail}"
+                        f"The '{larger.text_content.strip()[:40]}' button is "
+                        f"{ratio:.1f}× larger than '{smaller.text_content.strip()[:40]}', "
+                        f"steering users toward one choice."
                     ),
                     severity="medium" if ratio < 5 else "high",
                     analyzer_name=self.name,
