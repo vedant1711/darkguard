@@ -108,6 +108,7 @@ class TestDomAnalyzer:
             assert 0.0 <= det.confidence <= 1.0
 
     def test_detects_button_size_disparity(self, service: object) -> None:
+        """Semantic pair (Accept/Decline) within proximity should be flagged."""
         payload = {
             "dom_metadata": {
                 "hidden_elements": [],
@@ -117,7 +118,7 @@ class TestDomAnalyzer:
                         "tag_name": "button",
                         "text_content": "Accept All",
                         "attributes": {},
-                        "bounding_rect": {"x": 0, "y": 0, "width": 300, "height": 60},
+                        "bounding_rect": {"x": 100, "y": 400, "width": 300, "height": 60},
                         "computed_styles": {
                             "color": "white",
                             "background_color": "blue",
@@ -132,7 +133,7 @@ class TestDomAnalyzer:
                         "tag_name": "button",
                         "text_content": "Decline",
                         "attributes": {},
-                        "bounding_rect": {"x": 0, "y": 0, "width": 80, "height": 14},
+                        "bounding_rect": {"x": 410, "y": 420, "width": 80, "height": 14},
                         "computed_styles": {
                             "color": "gray",
                             "background_color": "white",
@@ -152,3 +153,48 @@ class TestDomAnalyzer:
         assert len(vi_detections) >= 1
         assert vi_detections[0].analyzer_name == "dom"
         assert "DSA-Art25" in vi_detections[0].regulation_refs
+
+    def test_ignores_distant_unrelated_buttons(self, service: object) -> None:
+        """Buttons far apart vertically and without semantic relationship should NOT be flagged."""
+        payload = {
+            "dom_metadata": {
+                "hidden_elements": [],
+                "interactive_elements": [
+                    {
+                        "selector": "#search-btn",
+                        "tag_name": "button",
+                        "text_content": "Search",
+                        "attributes": {},
+                        "bounding_rect": {"x": 100, "y": 100, "width": 300, "height": 60},
+                        "computed_styles": {
+                            "color": "white",
+                            "background_color": "blue",
+                            "font_size": "18px",
+                            "opacity": "1",
+                            "display": "block",
+                            "visibility": "visible",
+                        },
+                    },
+                    {
+                        "selector": "#footer-link",
+                        "tag_name": "a",
+                        "text_content": "Privacy Policy",
+                        "attributes": {},
+                        "bounding_rect": {"x": 50, "y": 900, "width": 80, "height": 14},
+                        "computed_styles": {
+                            "color": "gray",
+                            "background_color": "white",
+                            "font_size": "10px",
+                            "opacity": "1",
+                            "display": "inline",
+                            "visibility": "visible",
+                        },
+                    },
+                ],
+                "prechecked_inputs": [],
+                "url": "https://example.com",
+            }
+        }
+        results = _run(service.analyze(payload))  # type: ignore[attr-defined]
+        vi_detections = [d for d in results if d.category == "visual_interference"]
+        assert len(vi_detections) == 0

@@ -36,6 +36,13 @@ URGENCY_PATTERNS: list[re.Pattern[str]] = [
     re.compile(r"\d+\s+(people|others?)\s+(are\s+)?(viewing|watching|looking)", re.IGNORECASE),
     re.compile(r"(selling|going)\s+fast", re.IGNORECASE),
     re.compile(r"(last|final)\s+chance", re.IGNORECASE),
+    # Travel / booking specific patterns
+    re.compile(r"\d+\s+(people|guests?|travell?ers?)\s+(booked|reserved)\s+(in|over)\s+(the\s+)?(last|past)", re.IGNORECASE),
+    re.compile(r"(in\s+)?high\s+demand", re.IGNORECASE),
+    re.compile(r"only\s+\d+\s+(rooms?|seats?|tickets?|spots?|units?)\s+(left|remaining|available)", re.IGNORECASE),
+    re.compile(r"prices?\s+(may|might|will|could)\s+(increase|go\s+up|rise)", re.IGNORECASE),
+    re.compile(r"(very|super|extremely|incredibly)\s+popular", re.IGNORECASE),
+    re.compile(r"(booked|sold|purchased)\s+\d+\s+times?\s+(today|this\s+week|recently)", re.IGNORECASE),
 ]
 
 MISDIRECTION_PATTERNS: list[tuple[re.Pattern[str], str]] = [

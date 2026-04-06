@@ -18,9 +18,16 @@ from core.interfaces import BaseAnalyzer
 from core.models import Detection
 
 # Heuristics for consent classification
-ACCEPT_RE = re.compile(r"^(accept|agree|allow)(\s+all)?(\s+cookies?)?$", re.IGNORECASE)
-DECLINE_RE = re.compile(r"^(reject|decline|deny)(\s+all)?(\s+cookies?)?$", re.IGNORECASE)
-MANAGE_RE = re.compile(r"^(manage|settings|preferences|customize|options)(\s+(settings|cookies?|preferences|choices))?$", re.IGNORECASE)
+ACCEPT_RE = re.compile(r"^(accept|agree|allow|got it|i understand|ok)(\s+(all|and\s+close|and\s+continue))?(\s+cookies?)?$", re.IGNORECASE)
+DECLINE_RE = re.compile(r"^(reject|decline|deny|no\s*,?\s*thanks?)(\s+all)?(\s+cookies?)?$", re.IGNORECASE)
+MANAGE_RE = re.compile(r"^(manage|settings|preferences|customize|options|cookie\s+settings|privacy\s+settings)(\s+(settings|cookies?|preferences|choices))?$", re.IGNORECASE)
+
+# Keywords that suggest a consent banner is present
+_BANNER_KEYWORDS = [
+    "cookie", "consent", "privacy", "tracking", "gdpr",
+    "data protection", "accept cookies", "we use cookies",
+    "this site uses", "your privacy",
+]
 
 
 class ConsentAnalyzerService(BaseAnalyzer):
@@ -80,8 +87,9 @@ class ConsentAnalyzerService(BaseAnalyzer):
             if not isinstance(attrs, dict) or not isinstance(styles, dict) or not isinstance(rect, dict):
                 continue
 
-            # Identify banner strings
-            if "cookie" in text.lower() or "consent" in text.lower():
+            # Identify banner strings via expanded keyword list
+            text_lower = text.lower()
+            if any(kw in text_lower for kw in _BANNER_KEYWORDS):
                 has_banner = True
 
             if tag in ("button", "a") and len(text) < 30:
@@ -118,6 +126,13 @@ class ConsentAnalyzerService(BaseAnalyzer):
                             label_text=str(el.get("text_content", "")),
                         )
                     )
+
+        # Also scan body text from text_content if available
+        text_content = payload.get("text_content")
+        if not has_banner and isinstance(text_content, dict):
+            body = str(text_content.get("body_text", "")).lower()
+            if any(kw in body for kw in _BANNER_KEYWORDS):
+                has_banner = True
 
         # Only process if we found evidence of a consent interaction
         has_consent_terms = any(b.text for b in buttons if ACCEPT_RE.search(b.text) or MANAGE_RE.search(b.text))
