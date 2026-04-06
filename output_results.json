@@ -1,0 +1,753 @@
+{
+  "detections": [
+    {
+      "category": "visual_interference",
+      "element_selector": "html > body > div:nth-child(1) > div > div:nth-child(1) > a",
+      "confidence": 0.95,
+      "explanation": "This button is 22.3\u00d7 smaller than a nearby button, making it easy to overlook.",
+      "severity": "high",
+      "corroborated": false,
+      "user_feedback": null,
+      "analyzer_name": "dom",
+      "platform_context": "general",
+      "regulation_refs": [
+        "DSA-Art25",
+        "UCPD"
+      ]
+    },
+    {
+      "category": "visual_interference",
+      "element_selector": "html > body > div:nth-child(1) > div > div:nth-child(2) > div > div:nth-child(1) > div > div > div > div > div > div > div > div > div > div > header > div > nav:nth-child(1) > div:nth-child(1) > div > span > a",
+      "confidence": 0.95,
+      "explanation": "This button is 19.0\u00d7 smaller than a nearby button, making it easy to overlook.",
+      "severity": "high",
+      "corroborated": false,
+      "user_feedback": null,
+      "analyzer_name": "dom",
+      "platform_context": "general",
+      "regulation_refs": [
+        "DSA-Art25",
+        "UCPD"
+      ]
+    },
+    {
+      "category": "visual_interference",
+      "element_selector": "html > body > div:nth-child(1) > div > div:nth-child(2) > div > div:nth-child(1) > div > div > div > div > div > div > div > div > div > div > header > div > nav:nth-child(1) > div:nth-child(2) > span:nth-child(1) > button",
+      "confidence": 0.95,
+      "explanation": "This button is 24.7\u00d7 smaller than a nearby button, making it easy to overlook.",
+      "severity": "high",
+      "corroborated": false,
+      "user_feedback": null,
+      "analyzer_name": "dom",
+      "platform_context": "general",
+      "regulation_refs": [
+        "DSA-Art25",
+        "UCPD"
+      ]
+    },
+    {
+      "category": "visual_interference",
+      "element_selector": "html > body > div:nth-child(1) > div > div:nth-child(2) > div > div:nth-child(1) > div > div > div > div > div > div > div > div > div > div > header > div > nav:nth-child(1) > div:nth-child(2) > span:nth-child(2) > button",
+      "confidence": 0.95,
+      "explanation": "This button is 28.5\u00d7 smaller than a nearby button, making it easy to overlook.",
+      "severity": "high",
+      "corroborated": false,
+      "user_feedback": null,
+      "analyzer_name": "dom",
+      "platform_context": "general",
+      "regulation_refs": [
+        "DSA-Art25",
+        "UCPD"
+      ]
+    },
+    {
+      "category": "visual_interference",
+      "element_selector": "html > body > div:nth-child(1) > div > div:nth-child(2) > div > div:nth-child(1) > div > div > div > div > div > div > div > div > div > div > header > div > nav:nth-child(1) > div:nth-child(2) > span:nth-child(3) > a",
+      "confidence": 0.95,
+      "explanation": "This button is 28.5\u00d7 smaller than a nearby button, making it easy to overlook.",
+      "severity": "high",
+      "corroborated": false,
+      "user_feedback": null,
+      "analyzer_name": "dom",
+      "platform_context": "general",
+      "regulation_refs": [
+        "DSA-Art25",
+        "UCPD"
+      ]
+    },
+    {
+      "category": "visual_interference",
+      "element_selector": "html > body > div:nth-child(1) > div > div:nth-child(2) > div > div:nth-child(1) > div > div > div > div > div > div > div > div > div > div > header > div > nav:nth-child(1) > div:nth-child(2) > div > a",
+      "confidence": 0.95,
+      "explanation": "This button is 27.0\u00d7 smaller than a nearby button, making it easy to overlook.",
+      "severity": "high",
+      "corroborated": false,
+      "user_feedback": null,
+      "analyzer_name": "dom",
+      "platform_context": "general",
+      "regulation_refs": [
+        "DSA-Art25",
+        "UCPD"
+      ]
+    },
+    {
+      "category": "visual_interference",
+      "element_selector": "#main > div:nth-child(2) > div > div > div > div > div:nth-child(4) > div > div > div:nth-child(1) > div > div > div:nth-child(2) > div > div:nth-child(2) > button:nth-child(1)",
+      "confidence": 0.95,
+      "explanation": "This button is 50.7\u00d7 smaller than a nearby button, making it easy to overlook.",
+      "severity": "high",
+      "corroborated": false,
+      "user_feedback": null,
+      "analyzer_name": "dom",
+      "platform_context": "general",
+      "regulation_refs": [
+        "DSA-Art25",
+        "UCPD"
+      ]
+    },
+    {
+      "category": "visual_interference",
+      "element_selector": "#main > div:nth-child(2) > div > div > div > div > div:nth-child(4) > div > div > div:nth-child(1) > div > div > div:nth-child(2) > div > div:nth-child(2) > button:nth-child(2)",
+      "confidence": 0.95,
+      "explanation": "This button is 50.7\u00d7 smaller than a nearby button, making it easy to overlook.",
+      "severity": "high",
+      "corroborated": false,
+      "user_feedback": null,
+      "analyzer_name": "dom",
+      "platform_context": "general",
+      "regulation_refs": [
+        "DSA-Art25",
+        "UCPD"
+      ]
+    },
+    {
+      "category": "visual_interference",
+      "element_selector": "html > body > div:nth-child(1) > div > div:nth-child(2) > div > div:nth-child(1) > div > div > div > div > div > div > div > div > div > div > header > div > nav:nth-child(1) > div:nth-child(2) > a:nth-child(1)",
+      "confidence": 0.95,
+      "explanation": "This button is 8.9\u00d7 smaller than a nearby button, making it easy to overlook.",
+      "severity": "high",
+      "corroborated": false,
+      "user_feedback": null,
+      "analyzer_name": "dom",
+      "platform_context": "general",
+      "regulation_refs": [
+        "DSA-Art25",
+        "UCPD"
+      ]
+    },
+    {
+      "category": "visual_interference",
+      "element_selector": "html > body > div:nth-child(1) > div > div:nth-child(2) > div > div:nth-child(1) > div > div > div > div > div > div > div > div > div > div > header > div > nav:nth-child(1) > div:nth-child(2) > a:nth-child(2)",
+      "confidence": 0.95,
+      "explanation": "This button is 24.2\u00d7 smaller than a nearby button, making it easy to overlook.",
+      "severity": "high",
+      "corroborated": false,
+      "user_feedback": null,
+      "analyzer_name": "dom",
+      "platform_context": "general",
+      "regulation_refs": [
+        "DSA-Art25",
+        "UCPD"
+      ]
+    },
+    {
+      "category": "visual_interference",
+      "element_selector": "#accommodations",
+      "confidence": 0.95,
+      "explanation": "This button is 16.0\u00d7 smaller than a nearby button, making it easy to overlook.",
+      "severity": "high",
+      "corroborated": false,
+      "user_feedback": null,
+      "analyzer_name": "dom",
+      "platform_context": "general",
+      "regulation_refs": [
+        "DSA-Art25",
+        "UCPD"
+      ]
+    },
+    {
+      "category": "visual_interference",
+      "element_selector": "#flights",
+      "confidence": 0.95,
+      "explanation": "This button is 14.6\u00d7 smaller than a nearby button, making it easy to overlook.",
+      "severity": "high",
+      "corroborated": false,
+      "user_feedback": null,
+      "analyzer_name": "dom",
+      "platform_context": "general",
+      "regulation_refs": [
+        "DSA-Art25",
+        "UCPD"
+      ]
+    },
+    {
+      "category": "visual_interference",
+      "element_selector": "#packages",
+      "confidence": 0.95,
+      "explanation": "This button is 10.1\u00d7 smaller than a nearby button, making it easy to overlook.",
+      "severity": "high",
+      "corroborated": false,
+      "user_feedback": null,
+      "analyzer_name": "dom",
+      "platform_context": "general",
+      "regulation_refs": [
+        "DSA-Art25",
+        "UCPD"
+      ]
+    },
+    {
+      "category": "visual_interference",
+      "element_selector": "#cars",
+      "confidence": 0.95,
+      "explanation": "This button is 12.3\u00d7 smaller than a nearby button, making it easy to overlook.",
+      "severity": "high",
+      "corroborated": false,
+      "user_feedback": null,
+      "analyzer_name": "dom",
+      "platform_context": "general",
+      "regulation_refs": [
+        "DSA-Art25",
+        "UCPD"
+      ]
+    },
+    {
+      "category": "visual_interference",
+      "element_selector": "#cruises",
+      "confidence": 0.95,
+      "explanation": "This button is 14.1\u00d7 smaller than a nearby button, making it easy to overlook.",
+      "severity": "high",
+      "corroborated": false,
+      "user_feedback": null,
+      "analyzer_name": "dom",
+      "platform_context": "general",
+      "regulation_refs": [
+        "DSA-Art25",
+        "UCPD"
+      ]
+    },
+    {
+      "category": "visual_interference",
+      "element_selector": "#attractions",
+      "confidence": 0.95,
+      "explanation": "This button is 11.6\u00d7 smaller than a nearby button, making it easy to overlook.",
+      "severity": "high",
+      "corroborated": false,
+      "user_feedback": null,
+      "analyzer_name": "dom",
+      "platform_context": "general",
+      "regulation_refs": [
+        "DSA-Art25",
+        "UCPD"
+      ]
+    },
+    {
+      "category": "visual_interference",
+      "element_selector": "#airport_taxis",
+      "confidence": 0.95,
+      "explanation": "This button is 10.9\u00d7 smaller than a nearby button, making it easy to overlook.",
+      "severity": "high",
+      "corroborated": false,
+      "user_feedback": null,
+      "analyzer_name": "dom",
+      "platform_context": "general",
+      "regulation_refs": [
+        "DSA-Art25",
+        "UCPD"
+      ]
+    },
+    {
+      "category": "visual_interference",
+      "element_selector": "#main > div:nth-child(1) > div > div > div > div > div > div > div > div:nth-child(2) > div > div > form > div > div:nth-child(4) > button",
+      "confidence": 0.95,
+      "explanation": "This button is 10.5\u00d7 smaller than a nearby button, making it easy to overlook.",
+      "severity": "high",
+      "corroborated": false,
+      "user_feedback": null,
+      "analyzer_name": "dom",
+      "platform_context": "general",
+      "regulation_refs": [
+        "DSA-Art25",
+        "UCPD"
+      ]
+    },
+    {
+      "category": "visual_interference",
+      "element_selector": "#:R4pjb5: > div:nth-child(1) > div > div > div > div > div:nth-child(1) > div > div:nth-child(2) > div > a",
+      "confidence": 0.95,
+      "explanation": "This button is 19.0\u00d7 smaller than a nearby button, making it easy to overlook.",
+      "severity": "high",
+      "corroborated": false,
+      "user_feedback": null,
+      "analyzer_name": "dom",
+      "platform_context": "general",
+      "regulation_refs": [
+        "DSA-Art25",
+        "UCPD"
+      ]
+    },
+    {
+      "category": "visual_interference",
+      "element_selector": "#:R4pjb5: > div:nth-child(2) > div > div > div > div > div:nth-child(1) > div > div:nth-child(3) > div > a",
+      "confidence": 0.95,
+      "explanation": "This button is 9.8\u00d7 smaller than a nearby button, making it easy to overlook.",
+      "severity": "high",
+      "corroborated": false,
+      "user_feedback": null,
+      "analyzer_name": "dom",
+      "platform_context": "general",
+      "regulation_refs": [
+        "DSA-Art25",
+        "UCPD"
+      ]
+    },
+    {
+      "category": "visual_interference",
+      "element_selector": "#main > div:nth-child(1) > div > div > div > div > div > div > div > div:nth-child(2) > div > div > form > div > div:nth-child(2) > div > button",
+      "confidence": 0.887879422231526,
+      "explanation": "This button is 6.9\u00d7 smaller than a nearby button, making it easy to overlook.",
+      "severity": "high",
+      "corroborated": false,
+      "user_feedback": null,
+      "analyzer_name": "dom",
+      "platform_context": "general",
+      "regulation_refs": [
+        "DSA-Art25",
+        "UCPD"
+      ]
+    },
+    {
+      "category": "visual_interference",
+      "element_selector": "#main > div:nth-child(1) > div > div > div > div > div > div > div > div:nth-child(2) > div > div > form > div > div:nth-child(3) > div > button",
+      "confidence": 0.887879422231526,
+      "explanation": "This button is 6.9\u00d7 smaller than a nearby button, making it easy to overlook.",
+      "severity": "high",
+      "corroborated": false,
+      "user_feedback": null,
+      "analyzer_name": "dom",
+      "platform_context": "general",
+      "regulation_refs": [
+        "DSA-Art25",
+        "UCPD"
+      ]
+    },
+    {
+      "category": "visual_interference",
+      "element_selector": "#:R5qmr5:",
+      "confidence": 0.8,
+      "explanation": "This element has very low opacity (0.00), making it hard to see or read.",
+      "severity": "medium",
+      "corroborated": false,
+      "user_feedback": null,
+      "analyzer_name": "dom",
+      "platform_context": "general",
+      "regulation_refs": [
+        "DSA-Art25",
+        "UCPD"
+      ]
+    }
+  ],
+  "audit_report": {
+    "metadata": {
+      "url": "https://www.booking.com/",
+      "timestamp": "2026-04-05T23:32:46.261171+00:00",
+      "analyzer_version": "1.0.0"
+    },
+    "score": {
+      "total": 100.0,
+      "grade": "F",
+      "pattern_count": 23,
+      "unique_categories": 1,
+      "corroborated_count": 0,
+      "severity_distribution": {
+        "high": 22,
+        "medium": 1,
+        "low": 0
+      }
+    },
+    "category_summary": {
+      "visual_interference": {
+        "count": 23,
+        "max_confidence": 0.95,
+        "severity": "high",
+        "regulations": [
+          "DSA-Art25",
+          "UCPD"
+        ]
+      }
+    },
+    "regulations_violated": [
+      {
+        "code": "DSA-Art25",
+        "name": "EU Digital Services Act Article 25",
+        "jurisdiction": "EU",
+        "description": "Prohibits dark patterns that distort or impair user autonomy or decision-making."
+      },
+      {
+        "code": "UCPD",
+        "name": "Unfair Commercial Practices Directive",
+        "jurisdiction": "EU",
+        "description": "Prohibits misleading and aggressive commercial practices."
+      }
+    ],
+    "detections": [
+      {
+        "category": "visual_interference",
+        "element_selector": "html > body > div:nth-child(1) > div > div:nth-child(1) > a",
+        "confidence": 0.95,
+        "explanation": "This button is 22.3\u00d7 smaller than a nearby button, making it easy to overlook.",
+        "severity": "high",
+        "corroborated": false,
+        "user_feedback": null,
+        "analyzer_name": "dom",
+        "platform_context": "general",
+        "regulation_refs": [
+          "DSA-Art25",
+          "UCPD"
+        ]
+      },
+      {
+        "category": "visual_interference",
+        "element_selector": "html > body > div:nth-child(1) > div > div:nth-child(2) > div > div:nth-child(1) > div > div > div > div > div > div > div > div > div > div > header > div > nav:nth-child(1) > div:nth-child(1) > div > span > a",
+        "confidence": 0.95,
+        "explanation": "This button is 19.0\u00d7 smaller than a nearby button, making it easy to overlook.",
+        "severity": "high",
+        "corroborated": false,
+        "user_feedback": null,
+        "analyzer_name": "dom",
+        "platform_context": "general",
+        "regulation_refs": [
+          "DSA-Art25",
+          "UCPD"
+        ]
+      },
+      {
+        "category": "visual_interference",
+        "element_selector": "html > body > div:nth-child(1) > div > div:nth-child(2) > div > div:nth-child(1) > div > div > div > div > div > div > div > div > div > div > header > div > nav:nth-child(1) > div:nth-child(2) > span:nth-child(1) > button",
+        "confidence": 0.95,
+        "explanation": "This button is 24.7\u00d7 smaller than a nearby button, making it easy to overlook.",
+        "severity": "high",
+        "corroborated": false,
+        "user_feedback": null,
+        "analyzer_name": "dom",
+        "platform_context": "general",
+        "regulation_refs": [
+          "DSA-Art25",
+          "UCPD"
+        ]
+      },
+      {
+        "category": "visual_interference",
+        "element_selector": "html > body > div:nth-child(1) > div > div:nth-child(2) > div > div:nth-child(1) > div > div > div > div > div > div > div > div > div > div > header > div > nav:nth-child(1) > div:nth-child(2) > span:nth-child(2) > button",
+        "confidence": 0.95,
+        "explanation": "This button is 28.5\u00d7 smaller than a nearby button, making it easy to overlook.",
+        "severity": "high",
+        "corroborated": false,
+        "user_feedback": null,
+        "analyzer_name": "dom",
+        "platform_context": "general",
+        "regulation_refs": [
+          "DSA-Art25",
+          "UCPD"
+        ]
+      },
+      {
+        "category": "visual_interference",
+        "element_selector": "html > body > div:nth-child(1) > div > div:nth-child(2) > div > div:nth-child(1) > div > div > div > div > div > div > div > div > div > div > header > div > nav:nth-child(1) > div:nth-child(2) > span:nth-child(3) > a",
+        "confidence": 0.95,
+        "explanation": "This button is 28.5\u00d7 smaller than a nearby button, making it easy to overlook.",
+        "severity": "high",
+        "corroborated": false,
+        "user_feedback": null,
+        "analyzer_name": "dom",
+        "platform_context": "general",
+        "regulation_refs": [
+          "DSA-Art25",
+          "UCPD"
+        ]
+      },
+      {
+        "category": "visual_interference",
+        "element_selector": "html > body > div:nth-child(1) > div > div:nth-child(2) > div > div:nth-child(1) > div > div > div > div > div > div > div > div > div > div > header > div > nav:nth-child(1) > div:nth-child(2) > div > a",
+        "confidence": 0.95,
+        "explanation": "This button is 27.0\u00d7 smaller than a nearby button, making it easy to overlook.",
+        "severity": "high",
+        "corroborated": false,
+        "user_feedback": null,
+        "analyzer_name": "dom",
+        "platform_context": "general",
+        "regulation_refs": [
+          "DSA-Art25",
+          "UCPD"
+        ]
+      },
+      {
+        "category": "visual_interference",
+        "element_selector": "#main > div:nth-child(2) > div > div > div > div > div:nth-child(4) > div > div > div:nth-child(1) > div > div > div:nth-child(2) > div > div:nth-child(2) > button:nth-child(1)",
+        "confidence": 0.95,
+        "explanation": "This button is 50.7\u00d7 smaller than a nearby button, making it easy to overlook.",
+        "severity": "high",
+        "corroborated": false,
+        "user_feedback": null,
+        "analyzer_name": "dom",
+        "platform_context": "general",
+        "regulation_refs": [
+          "DSA-Art25",
+          "UCPD"
+        ]
+      },
+      {
+        "category": "visual_interference",
+        "element_selector": "#main > div:nth-child(2) > div > div > div > div > div:nth-child(4) > div > div > div:nth-child(1) > div > div > div:nth-child(2) > div > div:nth-child(2) > button:nth-child(2)",
+        "confidence": 0.95,
+        "explanation": "This button is 50.7\u00d7 smaller than a nearby button, making it easy to overlook.",
+        "severity": "high",
+        "corroborated": false,
+        "user_feedback": null,
+        "analyzer_name": "dom",
+        "platform_context": "general",
+        "regulation_refs": [
+          "DSA-Art25",
+          "UCPD"
+        ]
+      },
+      {
+        "category": "visual_interference",
+        "element_selector": "html > body > div:nth-child(1) > div > div:nth-child(2) > div > div:nth-child(1) > div > div > div > div > div > div > div > div > div > div > header > div > nav:nth-child(1) > div:nth-child(2) > a:nth-child(1)",
+        "confidence": 0.95,
+        "explanation": "This button is 8.9\u00d7 smaller than a nearby button, making it easy to overlook.",
+        "severity": "high",
+        "corroborated": false,
+        "user_feedback": null,
+        "analyzer_name": "dom",
+        "platform_context": "general",
+        "regulation_refs": [
+          "DSA-Art25",
+          "UCPD"
+        ]
+      },
+      {
+        "category": "visual_interference",
+        "element_selector": "html > body > div:nth-child(1) > div > div:nth-child(2) > div > div:nth-child(1) > div > div > div > div > div > div > div > div > div > div > header > div > nav:nth-child(1) > div:nth-child(2) > a:nth-child(2)",
+        "confidence": 0.95,
+        "explanation": "This button is 24.2\u00d7 smaller than a nearby button, making it easy to overlook.",
+        "severity": "high",
+        "corroborated": false,
+        "user_feedback": null,
+        "analyzer_name": "dom",
+        "platform_context": "general",
+        "regulation_refs": [
+          "DSA-Art25",
+          "UCPD"
+        ]
+      },
+      {
+        "category": "visual_interference",
+        "element_selector": "#accommodations",
+        "confidence": 0.95,
+        "explanation": "This button is 16.0\u00d7 smaller than a nearby button, making it easy to overlook.",
+        "severity": "high",
+        "corroborated": false,
+        "user_feedback": null,
+        "analyzer_name": "dom",
+        "platform_context": "general",
+        "regulation_refs": [
+          "DSA-Art25",
+          "UCPD"
+        ]
+      },
+      {
+        "category": "visual_interference",
+        "element_selector": "#flights",
+        "confidence": 0.95,
+        "explanation": "This button is 14.6\u00d7 smaller than a nearby button, making it easy to overlook.",
+        "severity": "high",
+        "corroborated": false,
+        "user_feedback": null,
+        "analyzer_name": "dom",
+        "platform_context": "general",
+        "regulation_refs": [
+          "DSA-Art25",
+          "UCPD"
+        ]
+      },
+      {
+        "category": "visual_interference",
+        "element_selector": "#packages",
+        "confidence": 0.95,
+        "explanation": "This button is 10.1\u00d7 smaller than a nearby button, making it easy to overlook.",
+        "severity": "high",
+        "corroborated": false,
+        "user_feedback": null,
+        "analyzer_name": "dom",
+        "platform_context": "general",
+        "regulation_refs": [
+          "DSA-Art25",
+          "UCPD"
+        ]
+      },
+      {
+        "category": "visual_interference",
+        "element_selector": "#cars",
+        "confidence": 0.95,
+        "explanation": "This button is 12.3\u00d7 smaller than a nearby button, making it easy to overlook.",
+        "severity": "high",
+        "corroborated": false,
+        "user_feedback": null,
+        "analyzer_name": "dom",
+        "platform_context": "general",
+        "regulation_refs": [
+          "DSA-Art25",
+          "UCPD"
+        ]
+      },
+      {
+        "category": "visual_interference",
+        "element_selector": "#cruises",
+        "confidence": 0.95,
+        "explanation": "This button is 14.1\u00d7 smaller than a nearby button, making it easy to overlook.",
+        "severity": "high",
+        "corroborated": false,
+        "user_feedback": null,
+        "analyzer_name": "dom",
+        "platform_context": "general",
+        "regulation_refs": [
+          "DSA-Art25",
+          "UCPD"
+        ]
+      },
+      {
+        "category": "visual_interference",
+        "element_selector": "#attractions",
+        "confidence": 0.95,
+        "explanation": "This button is 11.6\u00d7 smaller than a nearby button, making it easy to overlook.",
+        "severity": "high",
+        "corroborated": false,
+        "user_feedback": null,
+        "analyzer_name": "dom",
+        "platform_context": "general",
+        "regulation_refs": [
+          "DSA-Art25",
+          "UCPD"
+        ]
+      },
+      {
+        "category": "visual_interference",
+        "element_selector": "#airport_taxis",
+        "confidence": 0.95,
+        "explanation": "This button is 10.9\u00d7 smaller than a nearby button, making it easy to overlook.",
+        "severity": "high",
+        "corroborated": false,
+        "user_feedback": null,
+        "analyzer_name": "dom",
+        "platform_context": "general",
+        "regulation_refs": [
+          "DSA-Art25",
+          "UCPD"
+        ]
+      },
+      {
+        "category": "visual_interference",
+        "element_selector": "#main > div:nth-child(1) > div > div > div > div > div > div > div > div:nth-child(2) > div > div > form > div > div:nth-child(4) > button",
+        "confidence": 0.95,
+        "explanation": "This button is 10.5\u00d7 smaller than a nearby button, making it easy to overlook.",
+        "severity": "high",
+        "corroborated": false,
+        "user_feedback": null,
+        "analyzer_name": "dom",
+        "platform_context": "general",
+        "regulation_refs": [
+          "DSA-Art25",
+          "UCPD"
+        ]
+      },
+      {
+        "category": "visual_interference",
+        "element_selector": "#:R4pjb5: > div:nth-child(1) > div > div > div > div > div:nth-child(1) > div > div:nth-child(2) > div > a",
+        "confidence": 0.95,
+        "explanation": "This button is 19.0\u00d7 smaller than a nearby button, making it easy to overlook.",
+        "severity": "high",
+        "corroborated": false,
+        "user_feedback": null,
+        "analyzer_name": "dom",
+        "platform_context": "general",
+        "regulation_refs": [
+          "DSA-Art25",
+          "UCPD"
+        ]
+      },
+      {
+        "category": "visual_interference",
+        "element_selector": "#:R4pjb5: > div:nth-child(2) > div > div > div > div > div:nth-child(1) > div > div:nth-child(3) > div > a",
+        "confidence": 0.95,
+        "explanation": "This button is 9.8\u00d7 smaller than a nearby button, making it easy to overlook.",
+        "severity": "high",
+        "corroborated": false,
+        "user_feedback": null,
+        "analyzer_name": "dom",
+        "platform_context": "general",
+        "regulation_refs": [
+          "DSA-Art25",
+          "UCPD"
+        ]
+      },
+      {
+        "category": "visual_interference",
+        "element_selector": "#main > div:nth-child(1) > div > div > div > div > div > div > div > div:nth-child(2) > div > div > form > div > div:nth-child(2) > div > button",
+        "confidence": 0.887879422231526,
+        "explanation": "This button is 6.9\u00d7 smaller than a nearby button, making it easy to overlook.",
+        "severity": "high",
+        "corroborated": false,
+        "user_feedback": null,
+        "analyzer_name": "dom",
+        "platform_context": "general",
+        "regulation_refs": [
+          "DSA-Art25",
+          "UCPD"
+        ]
+      },
+      {
+        "category": "visual_interference",
+        "element_selector": "#main > div:nth-child(1) > div > div > div > div > div > div > div > div:nth-child(2) > div > div > form > div > div:nth-child(3) > div > button",
+        "confidence": 0.887879422231526,
+        "explanation": "This button is 6.9\u00d7 smaller than a nearby button, making it easy to overlook.",
+        "severity": "high",
+        "corroborated": false,
+        "user_feedback": null,
+        "analyzer_name": "dom",
+        "platform_context": "general",
+        "regulation_refs": [
+          "DSA-Art25",
+          "UCPD"
+        ]
+      },
+      {
+        "category": "visual_interference",
+        "element_selector": "#:R5qmr5:",
+        "confidence": 0.8,
+        "explanation": "This element has very low opacity (0.00), making it hard to see or read.",
+        "severity": "medium",
+        "corroborated": false,
+        "user_feedback": null,
+        "analyzer_name": "dom",
+        "platform_context": "general",
+        "regulation_refs": [
+          "DSA-Art25",
+          "UCPD"
+        ]
+      }
+    ]
+  },
+  "scan_id": 2,
+  "benchmark": {
+    "site_score": 100.0,
+    "industry_avg": 42.0,
+    "percentile_rank": "worse",
+    "delta": 58.0,
+    "platform_context": "general",
+    "categories_above_average": [],
+    "categories_below_average": [
+      "visual_interference"
+    ]
+  },
+  "crawl_available": true
+}

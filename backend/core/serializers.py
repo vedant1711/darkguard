@@ -18,19 +18,19 @@ class BoundingRectSerializer(serializers.Serializer[dict[str, float]]):
 
 
 class ComputedStyleSerializer(serializers.Serializer[dict[str, str]]):
-    color = serializers.CharField()
-    background_color = serializers.CharField()
-    font_size = serializers.CharField()
-    opacity = serializers.CharField()
-    display = serializers.CharField()
-    visibility = serializers.CharField()
+    color = serializers.CharField(allow_blank=True)
+    background_color = serializers.CharField(allow_blank=True)
+    font_size = serializers.CharField(allow_blank=True)
+    opacity = serializers.CharField(allow_blank=True)
+    display = serializers.CharField(allow_blank=True)
+    visibility = serializers.CharField(allow_blank=True)
 
 
 class ElementInfoSerializer(serializers.Serializer[dict[str, object]]):
     selector = serializers.CharField()
     tag_name = serializers.CharField()
     text_content = serializers.CharField(allow_blank=True)
-    attributes = serializers.DictField(child=serializers.CharField())
+    attributes = serializers.DictField(child=serializers.CharField(allow_blank=True))
     bounding_rect = BoundingRectSerializer()
     computed_styles = ComputedStyleSerializer()
 
@@ -44,7 +44,7 @@ class DomMetadataSerializer(serializers.Serializer[dict[str, object]]):
 
 class LabeledElementSerializer(serializers.Serializer[dict[str, str]]):
     selector = serializers.CharField()
-    text = serializers.CharField()
+    text = serializers.CharField(allow_blank=True)
 
 
 class TextContentSerializer(serializers.Serializer[dict[str, object]]):
