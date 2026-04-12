@@ -83,7 +83,7 @@ export default function ScanDetailPage() {
       </div>
 
       {/* Regulation Violations */}
-      {report && report.regulations_violated.length > 0 && (
+      {report && report.regulations_violated && report.regulations_violated.length > 0 && (
         <div style={{ marginBottom: 28 }}>
           <h2 style={{ fontSize: "1.1rem", fontWeight: 600, marginBottom: 12 }}>
             Regulations Violated ({report.regulations_violated.length})
@@ -108,7 +108,7 @@ export default function ScanDetailPage() {
       )}
 
       {/* Category Summary */}
-      {report && Object.keys(report.category_summary).length > 0 && (
+      {report && report.category_summary && Object.keys(report.category_summary).length > 0 && (
         <div style={{ marginBottom: 28 }}>
           <h2 style={{ fontSize: "1.1rem", fontWeight: 600, marginBottom: 12 }}>
             Category Summary
