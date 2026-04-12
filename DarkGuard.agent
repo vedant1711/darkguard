@@ -4,9 +4,24 @@ description: Complete project handover — architecture, file inventory, constra
 
 # DarkGuard — Complete Agent Handover
 
-> **Last updated**: 2026-03-29  
-> **Test suite**: 118 backend tests passing, Next.js build succeeds  
-> **Status**: Phases 1–5 COMPLETE
+> **Last updated**: 2026-04-06  
+> **Test suite**: 119+ backend tests passing, Next.js build succeeds  
+> **Status**: Phases 1–6 COMPLETE
+
+---
+
+## 1.5 Design Principles (ALWAYS FOLLOW)
+
+1. **Catch Real Dark Patterns** — Every detection must be a genuine dark pattern that would 
+   mislead, trick, or trap a real user. False positives destroy trust. When in doubt, don't flag.
+2. **Be Helpful to the User** — Every detection explanation must help the user make a 
+   well-informed decision while navigating the website. Don't just say what the pattern is — 
+   explain why it's deceptive and what the user should watch out for.
+3. **Consistency** — Both Quick Scan and Deep Scan use the exact same analyzer pipeline 
+   (10 analyzers, 24 categories). Results must be consistent regardless of scan mode.
+4. **Deceptive.design Alignment** — Detection categories should align with the 16 types 
+   defined at deceptive.design/types. Our 24 categories cover all 16 plus additional 
+   granular subtypes.
 
 ---
 

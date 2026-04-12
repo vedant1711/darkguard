@@ -76,6 +76,8 @@ class DomAnalyzerService(BaseAnalyzer):
         detections.extend(self._check_size_disparity(dom_payload.interactive_elements))
         detections.extend(self._check_low_contrast(dom_payload.interactive_elements))
         detections.extend(self._check_hidden_deception(dom_payload.hidden_elements))
+        detections.extend(self._check_disguised_ads(dom_payload.interactive_elements))
+        detections.extend(self._check_comparison_prevention(dom_payload.interactive_elements))
 
         return detections
 
@@ -271,6 +273,103 @@ class DomAnalyzerService(BaseAnalyzer):
                         analyzer_name=self.name,
                         platform_context="general",
                         regulation_refs=["FTC-S5", "DSA-Art25"],
+                    )
+                )
+
+        return detections
+
+    # ── Disguised ads detection ───────────────────────────
+
+    _AD_CLASS_RE = re.compile(
+        r"(^|[_-])(ad|ads|advert|sponsored|promotion|promo|partner|paid)([_-]|$)",
+        re.IGNORECASE,
+    )
+    _AD_ATTR_RE = re.compile(
+        r"(sponsored|advertisement|promoted|paid.?content|partner.?content)",
+        re.IGNORECASE,
+    )
+
+    def _check_disguised_ads(
+        self, elements: list[DomElementInfo]
+    ) -> list[Detection]:
+        """Flag elements that appear to be ads disguised as regular content."""
+        detections: list[Detection] = []
+
+        for el in elements:
+            attrs = el.attributes
+            class_str = attrs.get("class", "")
+            id_str = attrs.get("id", "")
+            text = el.text_content.strip().lower()
+
+            # Check classes and IDs for ad indicators
+            has_ad_class = bool(self._AD_CLASS_RE.search(class_str) or self._AD_CLASS_RE.search(id_str))
+
+            # Check attributes for ad indicators
+            has_ad_attr = any(
+                self._AD_ATTR_RE.search(str(v))
+                for v in attrs.values()
+            )
+
+            # Check text for small "sponsored" / "ad" labels
+            has_ad_text = text in ("ad", "ads", "sponsored", "promoted", "advertisement")
+
+            if has_ad_class or has_ad_attr or has_ad_text:
+                detections.append(
+                    Detection(
+                        category="disguised_ads",
+                        element_selector=el.selector,
+                        confidence=0.7,
+                        explanation=(
+                            f"This element appears to be a sponsored/advertising element "
+                            f"styled to blend in with regular content. Disguised ads "
+                            f"can mislead users into clicking on paid content."
+                        ),
+                        severity="medium",
+                        analyzer_name=self.name,
+                        platform_context="general",
+                        regulation_refs=["FTC-S5", "DSA-Art25"],
+                    )
+                )
+
+        return detections
+
+    # ── Comparison prevention detection ──────────────────
+
+    def _check_comparison_prevention(
+        self, elements: list[DomElementInfo]
+    ) -> list[Detection]:
+        """Flag disabled or hidden comparison features."""
+        detections: list[Detection] = []
+
+        for el in elements:
+            attrs = el.attributes
+            text = el.text_content.strip().lower()
+
+            # Check for disabled comparison elements
+            is_compare_related = any(
+                kw in text for kw in ("compare", "comparison", "side by side", "vs")
+            )
+            is_disabled = (
+                "disabled" in attrs
+                or attrs.get("aria-disabled") == "true"
+                or el.computed_styles.get("pointer-events") == "none"
+            )
+
+            if is_compare_related and is_disabled:
+                detections.append(
+                    Detection(
+                        category="comparison_prevention",
+                        element_selector=el.selector,
+                        confidence=0.7,
+                        explanation=(
+                            f"A comparison feature appears to be disabled or blocked. "
+                            f"This may prevent users from making informed decisions "
+                            f"by comparing options side by side."
+                        ),
+                        severity="medium",
+                        analyzer_name=self.name,
+                        platform_context="ecommerce",
+                        regulation_refs=["UCPD", "CRD-Art6"],
                     )
                 )
 

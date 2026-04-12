@@ -5,6 +5,8 @@ Pattern-matching / NLP rules for detecting dark patterns in text:
 - Confirmshaming (guilt-tripping decline copy)
 - Urgency / scarcity language
 - Misdirection (misleading button labels)
+- Trick wording (double negatives, ambiguous opt-in/out language)
+- Forced action (requiring sign-up or account to access content)
 
 Standalone module — imports only from ``core.*``.
 """
@@ -60,6 +62,25 @@ MISDIRECTION_PATTERNS: list[tuple[re.Pattern[str], str]] = [
     ),
 ]
 
+TRICK_WORDING_PATTERNS: list[re.Pattern[str]] = [
+    # Double negatives
+    re.compile(r"un(check|tick|select)\s+(to\s+)?(not|avoid|prevent|stop)", re.IGNORECASE),
+    re.compile(r"(don'?t|do\s+not)\s+un(check|subscribe|select)", re.IGNORECASE),
+    # Ambiguous toggle language
+    re.compile(r"(opt\s+out|turn\s+off)\s+(of\s+)?(not\s+)?(receiving|sharing|sending)", re.IGNORECASE),
+    # Confusing consent phrasing
+    re.compile(r"by\s+(clicking|continuing|proceeding|signing).*you\s+(agree|consent|accept)", re.IGNORECASE),
+    # Misleading negative phrasing
+    re.compile(r"(no|don'?t)\s*,?\s*i\s+(don'?t\s+)?want\s+to\s+(keep|continue|stay|remain)", re.IGNORECASE),
+]
+
+FORCED_ACTION_PATTERNS: list[re.Pattern[str]] = [
+    re.compile(r"(sign\s+up|create\s+(an?\s+)?account|register|log\s+in)\s+(to\s+)?(view|see|access|continue|read|download|unlock)", re.IGNORECASE),
+    re.compile(r"(you\s+must|you\s+need\s+to|please)\s+(sign\s+up|create|register|log\s+in)", re.IGNORECASE),
+    re.compile(r"(join|sign\s+up)\s+(for\s+)?free\s+to\s+(continue|access|view|unlock)", re.IGNORECASE),
+    re.compile(r"(only|available)\s+(for|to)\s+(members?|subscribers?|registered)", re.IGNORECASE),
+]
+
 
 # TODO(roberta): Replace regex patterns with a fine-tuned RoBERTa classifier.
 # Integration point: load a HuggingFace `transformers` pipeline here for
@@ -91,6 +112,8 @@ class TextAnalyzerService(BaseAnalyzer):
         detections.extend(self._check_confirmshaming(text_payload.button_labels))
         detections.extend(self._check_misdirection(text_payload.button_labels))
         detections.extend(self._check_urgency(text_payload.body_text))
+        detections.extend(self._check_trick_wording(text_payload.body_text, text_payload.button_labels))
+        detections.extend(self._check_forced_action(text_payload.body_text, text_payload.button_labels))
 
         return detections
 
@@ -195,6 +218,100 @@ class TextAnalyzerService(BaseAnalyzer):
                             analyzer_name=self.name,
                             platform_context="general",
                             regulation_refs=["DSA-Art25"],
+                        )
+                    )
+                    break
+        return detections
+
+    def _check_trick_wording(
+        self, body_text: str, labels: list[LabeledElement]
+    ) -> list[Detection]:
+        """Detect confusing double negatives and ambiguous opt-in/out language."""
+        detections: list[Detection] = []
+        # Check body text
+        for pattern in TRICK_WORDING_PATTERNS:
+            match = pattern.search(body_text)
+            if match:
+                snippet = body_text[max(0, match.start() - 30):match.end() + 30]
+                detections.append(
+                    Detection(
+                        category="trick_wording",
+                        element_selector="body",
+                        confidence=0.75,
+                        explanation=(
+                            f'Confusing or trick wording detected: "…{snippet.strip()}…". '
+                            f'This kind of phrasing can mislead users into making unintended choices.'
+                        ),
+                        severity="medium",
+                        analyzer_name=self.name,
+                        platform_context="general",
+                        regulation_refs=["FTC-S5", "UCPD"],
+                    )
+                )
+        # Check button labels
+        for lbl in labels:
+            for pattern in TRICK_WORDING_PATTERNS:
+                if pattern.search(lbl.text):
+                    detections.append(
+                        Detection(
+                            category="trick_wording",
+                            element_selector=lbl.selector,
+                            confidence=0.8,
+                            explanation=(
+                                f'This button/link uses confusing wording: "{lbl.text[:80]}". '
+                                f'Watch out for double negatives or ambiguous phrasing.'
+                            ),
+                            severity="medium",
+                            analyzer_name=self.name,
+                            platform_context="general",
+                            regulation_refs=["FTC-S5", "UCPD"],
+                        )
+                    )
+                    break
+        return detections
+
+    def _check_forced_action(
+        self, body_text: str, labels: list[LabeledElement]
+    ) -> list[Detection]:
+        """Detect forced account creation or sign-up to access content."""
+        detections: list[Detection] = []
+        for pattern in FORCED_ACTION_PATTERNS:
+            match = pattern.search(body_text)
+            if match:
+                snippet = body_text[max(0, match.start() - 20):match.end() + 20]
+                detections.append(
+                    Detection(
+                        category="forced_action",
+                        element_selector="body",
+                        confidence=0.7,
+                        explanation=(
+                            f'Forced action detected: "…{snippet.strip()}…". '
+                            f'The site may be requiring account creation or sign-up '
+                            f'to access content that could be available without it.'
+                        ),
+                        severity="medium",
+                        analyzer_name=self.name,
+                        platform_context="general",
+                        regulation_refs=["GDPR-Art7", "DSA-Art25"],
+                    )
+                )
+        # Check buttons
+        for lbl in labels:
+            for pattern in FORCED_ACTION_PATTERNS:
+                if pattern.search(lbl.text):
+                    detections.append(
+                        Detection(
+                            category="forced_action",
+                            element_selector=lbl.selector,
+                            confidence=0.7,
+                            explanation=(
+                                f'This element requires an action to continue: "{lbl.text[:80]}". '
+                                f'Users may be forced to sign up or create an account unnecessarily.'
+                            ),
+                            severity="medium",
+                            analyzer_name=self.name,
+                            platform_context="general",
+                            regulation_refs=["GDPR-Art7", "DSA-Art25"],
                         )
                     )
                     break

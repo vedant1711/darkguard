@@ -1,0 +1,559 @@
+{
+  "url": "https://www.booking.com/",
+  "workflows": [
+    {
+      "workflow_id": "consent_privacy",
+      "workflow_name": "Consent & Privacy",
+      "workflow_description": "Interact with cookie/consent banner, navigate to privacy settings, check for preselections and asymmetric choices.",
+      "workflow_icon": "\ud83c\udf6a",
+      "steps": [
+        {
+          "step_number": 1,
+          "page_url": "https://www.booking.com/?chal_t=1775451781005&force_referer=",
+          "page_title": "Booking.com | Official site | The best hotels, flights, car rentals & accommodations",
+          "action_taken": "Navigated to https://www.booking.com/",
+          "screenshot_b64": "<107944 chars>",
+          "annotated_screenshot_b64": "<123144 chars>",
+          "detections": [
+            {
+              "category": "visual_interference",
+              "element_selector": "#main > div:nth-child(2) > div > div > div > div > div:nth-child(4) > div > div > div:nth-child(1) > div > div > div:nth-child(2) > div > div:nth-child(2) > button:nth-child(1)",
+              "confidence": 0.8,
+              "explanation": "This element has very low opacity (0.00), making it hard to see or read.",
+              "severity": "medium",
+              "corroborated": false,
+              "user_feedback": null,
+              "analyzer_name": "dom",
+              "platform_context": "general",
+              "regulation_refs": [
+                "DSA-Art25",
+                "UCPD"
+              ]
+            },
+            {
+              "category": "visual_interference",
+              "element_selector": "#main > div:nth-child(2) > div > div > div > div > div:nth-child(4) > div > div > div:nth-child(1) > div > div > div:nth-child(2) > div > div:nth-child(2) > button:nth-child(2)",
+              "confidence": 0.8,
+              "explanation": "This element has very low opacity (0.00), making it hard to see or read.",
+              "severity": "medium",
+              "corroborated": false,
+              "user_feedback": null,
+              "analyzer_name": "dom",
+              "platform_context": "general",
+              "regulation_refs": [
+                "DSA-Art25",
+                "UCPD"
+              ]
+            },
+            {
+              "category": "visual_interference",
+              "element_selector": "#main > div:nth-child(2) > div > div > div > div > div:nth-child(5) > div > div > div:nth-child(1) > div > div > div > div > div:nth-child(2) > div:nth-child(2) > button:nth-child(1)",
+              "confidence": 0.8,
+              "explanation": "This element has very low opacity (0.00), making it hard to see or read.",
+              "severity": "medium",
+              "corroborated": false,
+              "user_feedback": null,
+              "analyzer_name": "dom",
+              "platform_context": "general",
+              "regulation_refs": [
+                "DSA-Art25",
+                "UCPD"
+              ]
+            },
+            {
+              "category": "visual_interference",
+              "element_selector": "#:r9: > div:nth-child(2) > button:nth-child(1)",
+              "confidence": 0.8,
+              "explanation": "This element has very low opacity (0.00), making it hard to see or read.",
+              "severity": "medium",
+              "corroborated": false,
+              "user_feedback": null,
+              "analyzer_name": "dom",
+              "platform_context": "general",
+              "regulation_refs": [
+                "DSA-Art25",
+                "UCPD"
+              ]
+            }
+          ],
+          "patterns_found": 4,
+          "timestamp": "2026-04-06T05:03:07.503651+00:00",
+          "success": true,
+          "error": ""
+        },
+        {
+          "step_number": 2,
+          "page_url": "https://www.booking.com/?chal_t=1775451781005&force_referer=",
+          "page_title": "Booking.com | Official site | The best hotels, flights, car rentals & accommodations",
+          "action_taken": "Analyze the cookie consent banner before interacting with it",
+          "screenshot_b64": "<107944 chars>",
+          "annotated_screenshot_b64": "<123144 chars>",
+          "detections": [
+            {
+              "category": "visual_interference",
+              "element_selector": "#main > div:nth-child(2) > div > div > div > div > div:nth-child(4) > div > div > div:nth-child(1) > div > div > div:nth-child(2) > div > div:nth-child(2) > button:nth-child(1)",
+              "confidence": 0.8,
+              "explanation": "This element has very low opacity (0.00), making it hard to see or read.",
+              "severity": "medium",
+              "corroborated": false,
+              "user_feedback": null,
+              "analyzer_name": "dom",
+              "platform_context": "general",
+              "regulation_refs": [
+                "DSA-Art25",
+                "UCPD"
+              ]
+            },
+            {
+              "category": "visual_interference",
+              "element_selector": "#main > div:nth-child(2) > div > div > div > div > div:nth-child(4) > div > div > div:nth-child(1) > div > div > div:nth-child(2) > div > div:nth-child(2) > button:nth-child(2)",
+              "confidence": 0.8,
+              "explanation": "This element has very low opacity (0.00), making it hard to see or read.",
+              "severity": "medium",
+              "corroborated": false,
+              "user_feedback": null,
+              "analyzer_name": "dom",
+              "platform_context": "general",
+              "regulation_refs": [
+                "DSA-Art25",
+                "UCPD"
+              ]
+            },
+            {
+              "category": "visual_interference",
+              "element_selector": "#main > div:nth-child(2) > div > div > div > div > div:nth-child(5) > div > div > div:nth-child(1) > div > div > div > div > div:nth-child(2) > div:nth-child(2) > button:nth-child(1)",
+              "confidence": 0.8,
+              "explanation": "This element has very low opacity (0.00), making it hard to see or read.",
+              "severity": "medium",
+              "corroborated": false,
+              "user_feedback": null,
+              "analyzer_name": "dom",
+              "platform_context": "general",
+              "regulation_refs": [
+                "DSA-Art25",
+                "UCPD"
+              ]
+            },
+            {
+              "category": "visual_interference",
+              "element_selector": "#:r9: > div:nth-child(2) > button:nth-child(1)",
+              "confidence": 0.8,
+              "explanation": "This element has very low opacity (0.00), making it hard to see or read.",
+              "severity": "medium",
+              "corroborated": false,
+              "user_feedback": null,
+              "analyzer_name": "dom",
+              "platform_context": "general",
+              "regulation_refs": [
+                "DSA-Art25",
+                "UCPD"
+              ]
+            }
+          ],
+          "patterns_found": 4,
+          "timestamp": "2026-04-06T05:03:09.723860+00:00",
+          "success": true,
+          "error": ""
+        },
+        {
+          "step_number": 3,
+          "page_url": "https://www.booking.com/?chal_t=1775451781005&force_referer=",
+          "page_title": "Booking.com | Official site | The best hotels, flights, car rentals & accommodations",
+          "action_taken": "Could not find element for: Click 'Manage', 'Settings', or 'Customize' on the cookie banner",
+          "screenshot_b64": "<107944 chars>",
+          "annotated_screenshot_b64": "<123144 chars>",
+          "detections": [
+            {
+              "category": "visual_interference",
+              "element_selector": "#main > div:nth-child(2) > div > div > div > div > div:nth-child(4) > div > div > div:nth-child(1) > div > div > div:nth-child(2) > div > div:nth-child(2) > button:nth-child(1)",
+              "confidence": 0.8,
+              "explanation": "This element has very low opacity (0.00), making it hard to see or read.",
+              "severity": "medium",
+              "corroborated": false,
+              "user_feedback": null,
+              "analyzer_name": "dom",
+              "platform_context": "general",
+              "regulation_refs": [
+                "DSA-Art25",
+                "UCPD"
+              ]
+            },
+            {
+              "category": "visual_interference",
+              "element_selector": "#main > div:nth-child(2) > div > div > div > div > div:nth-child(4) > div > div > div:nth-child(1) > div > div > div:nth-child(2) > div > div:nth-child(2) > button:nth-child(2)",
+              "confidence": 0.8,
+              "explanation": "This element has very low opacity (0.00), making it hard to see or read.",
+              "severity": "medium",
+              "corroborated": false,
+              "user_feedback": null,
+              "analyzer_name": "dom",
+              "platform_context": "general",
+              "regulation_refs": [
+                "DSA-Art25",
+                "UCPD"
+              ]
+            },
+            {
+              "category": "visual_interference",
+              "element_selector": "#main > div:nth-child(2) > div > div > div > div > div:nth-child(5) > div > div > div:nth-child(1) > div > div > div > div > div:nth-child(2) > div:nth-child(2) > button:nth-child(1)",
+              "confidence": 0.8,
+              "explanation": "This element has very low opacity (0.00), making it hard to see or read.",
+              "severity": "medium",
+              "corroborated": false,
+              "user_feedback": null,
+              "analyzer_name": "dom",
+              "platform_context": "general",
+              "regulation_refs": [
+                "DSA-Art25",
+                "UCPD"
+              ]
+            },
+            {
+              "category": "visual_interference",
+              "element_selector": "#:r9: > div:nth-child(2) > button:nth-child(1)",
+              "confidence": 0.8,
+              "explanation": "This element has very low opacity (0.00), making it hard to see or read.",
+              "severity": "medium",
+              "corroborated": false,
+              "user_feedback": null,
+              "analyzer_name": "dom",
+              "platform_context": "general",
+              "regulation_refs": [
+                "DSA-Art25",
+                "UCPD"
+              ]
+            }
+          ],
+          "patterns_found": 4,
+          "timestamp": "2026-04-06T05:03:11.982246+00:00",
+          "success": false,
+          "error": "Element not found with any hint selector"
+        },
+        {
+          "step_number": 4,
+          "page_url": "https://www.booking.com/?chal_t=1775451781005&force_referer=",
+          "page_title": "Booking.com | Official site | The best hotels, flights, car rentals & accommodations",
+          "action_taken": "Analyze cookie preferences page for preselected options and asymmetric choices",
+          "screenshot_b64": "<107944 chars>",
+          "annotated_screenshot_b64": "<123144 chars>",
+          "detections": [
+            {
+              "category": "visual_interference",
+              "element_selector": "#main > div:nth-child(2) > div > div > div > div > div:nth-child(4) > div > div > div:nth-child(1) > div > div > div:nth-child(2) > div > div:nth-child(2) > button:nth-child(1)",
+              "confidence": 0.8,
+              "explanation": "This element has very low opacity (0.00), making it hard to see or read.",
+              "severity": "medium",
+              "corroborated": false,
+              "user_feedback": null,
+              "analyzer_name": "dom",
+              "platform_context": "general",
+              "regulation_refs": [
+                "DSA-Art25",
+                "UCPD"
+              ]
+            },
+            {
+              "category": "visual_interference",
+              "element_selector": "#main > div:nth-child(2) > div > div > div > div > div:nth-child(4) > div > div > div:nth-child(1) > div > div > div:nth-child(2) > div > div:nth-child(2) > button:nth-child(2)",
+              "confidence": 0.8,
+              "explanation": "This element has very low opacity (0.00), making it hard to see or read.",
+              "severity": "medium",
+              "corroborated": false,
+              "user_feedback": null,
+              "analyzer_name": "dom",
+              "platform_context": "general",
+              "regulation_refs": [
+                "DSA-Art25",
+                "UCPD"
+              ]
+            },
+            {
+              "category": "visual_interference",
+              "element_selector": "#main > div:nth-child(2) > div > div > div > div > div:nth-child(5) > div > div > div:nth-child(1) > div > div > div > div > div:nth-child(2) > div:nth-child(2) > button:nth-child(1)",
+              "confidence": 0.8,
+              "explanation": "This element has very low opacity (0.00), making it hard to see or read.",
+              "severity": "medium",
+              "corroborated": false,
+              "user_feedback": null,
+              "analyzer_name": "dom",
+              "platform_context": "general",
+              "regulation_refs": [
+                "DSA-Art25",
+                "UCPD"
+              ]
+            },
+            {
+              "category": "visual_interference",
+              "element_selector": "#:r9: > div:nth-child(2) > button:nth-child(1)",
+              "confidence": 0.8,
+              "explanation": "This element has very low opacity (0.00), making it hard to see or read.",
+              "severity": "medium",
+              "corroborated": false,
+              "user_feedback": null,
+              "analyzer_name": "dom",
+              "platform_context": "general",
+              "regulation_refs": [
+                "DSA-Art25",
+                "UCPD"
+              ]
+            }
+          ],
+          "patterns_found": 4,
+          "timestamp": "2026-04-06T05:03:14.211485+00:00",
+          "success": true,
+          "error": ""
+        }
+      ],
+      "total_patterns": 16,
+      "categories_found": [
+        "visual_interference"
+      ],
+      "completed": true
+    },
+    {
+      "workflow_id": "signup_flow",
+      "workflow_name": "Sign-up Flow",
+      "workflow_description": "Navigate to registration and analyze forms for preselections, forced actions, and trick wording.",
+      "workflow_icon": "\ud83d\udcdd",
+      "steps": [
+        {
+          "step_number": 1,
+          "page_url": "https://www.booking.com/?chal_t=1775451794554&force_referer=",
+          "page_title": "Booking.com | Official site | The best hotels, flights, car rentals & accommodations",
+          "action_taken": "Navigated to https://www.booking.com/",
+          "screenshot_b64": "<414016 chars>",
+          "annotated_screenshot_b64": "<441552 chars>",
+          "detections": [
+            {
+              "category": "visual_interference",
+              "element_selector": "#main > div:nth-child(2) > div > div > div > div > div:nth-child(4) > div > div > div:nth-child(1) > div > div > div:nth-child(2) > div > div:nth-child(2) > button:nth-child(1)",
+              "confidence": 0.8,
+              "explanation": "This element has very low opacity (0.00), making it hard to see or read.",
+              "severity": "medium",
+              "corroborated": false,
+              "user_feedback": null,
+              "analyzer_name": "dom",
+              "platform_context": "general",
+              "regulation_refs": [
+                "DSA-Art25",
+                "UCPD"
+              ]
+            },
+            {
+              "category": "visual_interference",
+              "element_selector": "#main > div:nth-child(2) > div > div > div > div > div:nth-child(4) > div > div > div:nth-child(1) > div > div > div:nth-child(2) > div > div:nth-child(2) > button:nth-child(2)",
+              "confidence": 0.8,
+              "explanation": "This element has very low opacity (0.00), making it hard to see or read.",
+              "severity": "medium",
+              "corroborated": false,
+              "user_feedback": null,
+              "analyzer_name": "dom",
+              "platform_context": "general",
+              "regulation_refs": [
+                "DSA-Art25",
+                "UCPD"
+              ]
+            },
+            {
+              "category": "visual_interference",
+              "element_selector": "#main > div:nth-child(2) > div > div > div > div > div:nth-child(5) > div > div > div:nth-child(2) > div > div > div > div:nth-child(2) > div:nth-child(2) > button:nth-child(1)",
+              "confidence": 0.8,
+              "explanation": "This element has very low opacity (0.00), making it hard to see or read.",
+              "severity": "medium",
+              "corroborated": false,
+              "user_feedback": null,
+              "analyzer_name": "dom",
+              "platform_context": "general",
+              "regulation_refs": [
+                "DSA-Art25",
+                "UCPD"
+              ]
+            },
+            {
+              "category": "visual_interference",
+              "element_selector": "#main > div:nth-child(2) > div > div > div > div > div:nth-child(5) > div > div > div:nth-child(3) > div > div > div > div > div:nth-child(2) > div:nth-child(2) > button:nth-child(1)",
+              "confidence": 0.8,
+              "explanation": "This element has very low opacity (0.00), making it hard to see or read.",
+              "severity": "medium",
+              "corroborated": false,
+              "user_feedback": null,
+              "analyzer_name": "dom",
+              "platform_context": "general",
+              "regulation_refs": [
+                "DSA-Art25",
+                "UCPD"
+              ]
+            }
+          ],
+          "patterns_found": 4,
+          "timestamp": "2026-04-06T05:03:22.250293+00:00",
+          "success": true,
+          "error": ""
+        },
+        {
+          "step_number": 2,
+          "page_url": "https://www.booking.com/?chal_t=1775451794554&force_referer=",
+          "page_title": "Booking.com | Official site | The best hotels, flights, car rentals & accommodations",
+          "action_taken": "Failed: Find sign-up or register link",
+          "screenshot_b64": "<414016 chars>",
+          "annotated_screenshot_b64": "<441552 chars>",
+          "detections": [
+            {
+              "category": "visual_interference",
+              "element_selector": "#main > div:nth-child(2) > div > div > div > div > div:nth-child(4) > div > div > div:nth-child(1) > div > div > div:nth-child(2) > div > div:nth-child(2) > button:nth-child(1)",
+              "confidence": 0.8,
+              "explanation": "This element has very low opacity (0.00), making it hard to see or read.",
+              "severity": "medium",
+              "corroborated": false,
+              "user_feedback": null,
+              "analyzer_name": "dom",
+              "platform_context": "general",
+              "regulation_refs": [
+                "DSA-Art25",
+                "UCPD"
+              ]
+            },
+            {
+              "category": "visual_interference",
+              "element_selector": "#main > div:nth-child(2) > div > div > div > div > div:nth-child(4) > div > div > div:nth-child(1) > div > div > div:nth-child(2) > div > div:nth-child(2) > button:nth-child(2)",
+              "confidence": 0.8,
+              "explanation": "This element has very low opacity (0.00), making it hard to see or read.",
+              "severity": "medium",
+              "corroborated": false,
+              "user_feedback": null,
+              "analyzer_name": "dom",
+              "platform_context": "general",
+              "regulation_refs": [
+                "DSA-Art25",
+                "UCPD"
+              ]
+            },
+            {
+              "category": "visual_interference",
+              "element_selector": "#main > div:nth-child(2) > div > div > div > div > div:nth-child(5) > div > div > div:nth-child(2) > div > div > div > div:nth-child(2) > div:nth-child(2) > button:nth-child(1)",
+              "confidence": 0.8,
+              "explanation": "This element has very low opacity (0.00), making it hard to see or read.",
+              "severity": "medium",
+              "corroborated": false,
+              "user_feedback": null,
+              "analyzer_name": "dom",
+              "platform_context": "general",
+              "regulation_refs": [
+                "DSA-Art25",
+                "UCPD"
+              ]
+            },
+            {
+              "category": "visual_interference",
+              "element_selector": "#main > div:nth-child(2) > div > div > div > div > div:nth-child(5) > div > div > div:nth-child(3) > div > div > div > div > div:nth-child(2) > div:nth-child(2) > button:nth-child(1)",
+              "confidence": 0.8,
+              "explanation": "This element has very low opacity (0.00), making it hard to see or read.",
+              "severity": "medium",
+              "corroborated": false,
+              "user_feedback": null,
+              "analyzer_name": "dom",
+              "platform_context": "general",
+              "regulation_refs": [
+                "DSA-Art25",
+                "UCPD"
+              ]
+            }
+          ],
+          "patterns_found": 4,
+          "timestamp": "2026-04-06T05:03:27.768401+00:00",
+          "success": false,
+          "error": "ElementHandle.click: Timeout 5000ms exceeded.\nCall log:\n  - attempting click action\n    2 \u00d7 waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      -"
+        },
+        {
+          "step_number": 3,
+          "page_url": "https://www.booking.com/?chal_t=1775451794554&force_referer=",
+          "page_title": "Booking.com | Official site | The best hotels, flights, car rentals & accommodations",
+          "action_taken": "Analyze registration form for preselections, forced actions, and trick wording",
+          "screenshot_b64": "<414016 chars>",
+          "annotated_screenshot_b64": "<441552 chars>",
+          "detections": [
+            {
+              "category": "visual_interference",
+              "element_selector": "#main > div:nth-child(2) > div > div > div > div > div:nth-child(4) > div > div > div:nth-child(1) > div > div > div:nth-child(2) > div > div:nth-child(2) > button:nth-child(1)",
+              "confidence": 0.8,
+              "explanation": "This element has very low opacity (0.00), making it hard to see or read.",
+              "severity": "medium",
+              "corroborated": false,
+              "user_feedback": null,
+              "analyzer_name": "dom",
+              "platform_context": "general",
+              "regulation_refs": [
+                "DSA-Art25",
+                "UCPD"
+              ]
+            },
+            {
+              "category": "visual_interference",
+              "element_selector": "#main > div:nth-child(2) > div > div > div > div > div:nth-child(4) > div > div > div:nth-child(1) > div > div > div:nth-child(2) > div > div:nth-child(2) > button:nth-child(2)",
+              "confidence": 0.8,
+              "explanation": "This element has very low opacity (0.00), making it hard to see or read.",
+              "severity": "medium",
+              "corroborated": false,
+              "user_feedback": null,
+              "analyzer_name": "dom",
+              "platform_context": "general",
+              "regulation_refs": [
+                "DSA-Art25",
+                "UCPD"
+              ]
+            },
+            {
+              "category": "visual_interference",
+              "element_selector": "#main > div:nth-child(2) > div > div > div > div > div:nth-child(5) > div > div > div:nth-child(2) > div > div > div > div:nth-child(2) > div:nth-child(2) > button:nth-child(1)",
+              "confidence": 0.8,
+              "explanation": "This element has very low opacity (0.00), making it hard to see or read.",
+              "severity": "medium",
+              "corroborated": false,
+              "user_feedback": null,
+              "analyzer_name": "dom",
+              "platform_context": "general",
+              "regulation_refs": [
+                "DSA-Art25",
+                "UCPD"
+              ]
+            },
+            {
+              "category": "visual_interference",
+              "element_selector": "#main > div:nth-child(2) > div > div > div > div > div:nth-child(5) > div > div > div:nth-child(3) > div > div > div > div > div:nth-child(2) > div:nth-child(2) > button:nth-child(1)",
+              "confidence": 0.8,
+              "explanation": "This element has very low opacity (0.00), making it hard to see or read.",
+              "severity": "medium",
+              "corroborated": false,
+              "user_feedback": null,
+              "analyzer_name": "dom",
+              "platform_context": "general",
+              "regulation_refs": [
+                "DSA-Art25",
+                "UCPD"
+              ]
+            }
+          ],
+          "patterns_found": 4,
+          "timestamp": "2026-04-06T05:03:30.231374+00:00",
+          "success": true,
+          "error": ""
+        }
+      ],
+      "total_patterns": 12,
+      "categories_found": [
+        "visual_interference"
+      ],
+      "completed": true
+    }
+  ],
+  "summary": {
+    "total_patterns": 28,
+    "total_steps": 7,
+    "workflows_completed": 2,
+    "workflows_total": 2,
+    "categories_found": [
+      "visual_interference"
+    ]
+  },
+  "scan_id": 19
+}

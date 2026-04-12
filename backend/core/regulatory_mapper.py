@@ -138,6 +138,12 @@ CATEGORY_REGULATION_MAP: dict[str, list[str]] = {
     "price_anchoring": ["FTC-DeceptivePricing", "FTC-S5"],
     "bnpl_deception": ["TILA", "FTC-S5"],
     "intermediate_currency": ["DSA-Art25", "FTC-S5"],
+    # Phase 6 — deceptive.design taxonomy additions
+    "trick_wording": ["FTC-S5", "UCPD", "DSA-Art25"],
+    "forced_action": ["GDPR-Art7", "DSA-Art25"],
+    "disguised_ads": ["FTC-S5", "DSA-Art25", "UCPD"],
+    "comparison_prevention": ["UCPD", "CRD-Art6", "DSA-Art25"],
+    "obstruction": ["DSA-Art25", "FTC-NegativeOption", "FTC-S5"],
 }
 
 

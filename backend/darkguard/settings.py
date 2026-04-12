@@ -38,6 +38,7 @@ INSTALLED_APPS: list[str] = [
     "nagging_analyzer",
     "pricing_analyzer",
     "scans",
+    "deep_scan",
 ]
 
 MIDDLEWARE: list[str] = [
